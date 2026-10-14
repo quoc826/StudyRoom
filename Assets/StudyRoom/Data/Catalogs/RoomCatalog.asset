@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83478ce1cfc69c24f9cae1772b778859, type: 3}
+  m_Name: RoomCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::StudyRoomCatalog
+  startingCoins: 0
+  rooms:
+  - id: office-furnished
+    displayName: "G\xF3c h\u1ECDc c\u1EE7a t\xF4i"
+    prefab: {fileID: 8829296660789919424, guid: da0142f4b25235245b1267b8ef481103, type: 3}
+    thumbnail: {fileID: 2800000, guid: 3a15b82b2d9ba014a824ffe7b1259c72, type: 3}
+    price: 0
+    canCreate: 0
+    spawnPosition: {x: -0.47531193, y: -0.010004847, z: 2.1850586}
+  - id: empty-office_1
+    displayName: "Ph\xF2ng nh\u1ECF d\u1ECBu d\xE0ng"
+    prefab: {fileID: 5977278957981676344, guid: f6a89f1f26d81ea4396833f0c0af5b02, type: 3}
+    thumbnail: {fileID: 2800000, guid: 098bfba39c76c8d40b7e14d837c4432d, type: 3}
+    price: 0
+    canCreate: 1
+    spawnPosition: {x: 0, y: 0, z: 0}
+  - id: empty-office_24
+    displayName: "G\xF3c l\xE0m vi\u1EC7c m\u1EDBi"
+    prefab: {fileID: 8416012126061692547, guid: e5266eb3a52745a43812e4413b60bd3f, type: 3}
+    thumbnail: {fileID: 2800000, guid: 7c614ec7afc4b50429e99221528ad337, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0, y: 0, z: 0}
+  - id: empty-office_35
+    displayName: "Kh\xF4ng gian s\xE1ng t\u1EA1o"
+    prefab: {fileID: 3042326607796866896, guid: 19ca82c405376c141b83fade8598aaf7, type: 3}
+    thumbnail: {fileID: 2800000, guid: a80a342e85630344aa7948a580c6b0e6, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0, y: 0, z: 0}
+  - id: empty-study_room_11
+    displayName: "Ph\xF2ng h\u1ECDc y\xEAn t\u0129nh"
+    prefab: {fileID: 5460436058238002501, guid: 2544b20fb83e90949bc90bbc07fbbe67, type: 3}
+    thumbnail: {fileID: 2800000, guid: c5d1c9f6c9538ba4cb7f9910c4d26c9c, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0, y: 0, z: 0}
+  characters:
+  - id: cute-girl
+    displayName: CuteGirl
+    prefab: {fileID: 5321002210925577081, guid: 3c674c52da8f5fa4bb49864f3ed10810, type: 3}
+    thumbnail: {fileID: 2800000, guid: f13cc1bd1f3a434428343fb8eaa7cc6c, type: 3}
+    price: 0
+  initialRoomId: office-furnished
+  initialCharacterId: cute-girl

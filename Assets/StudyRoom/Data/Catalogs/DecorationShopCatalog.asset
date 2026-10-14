@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bb18d159417d02498e5c736f4ab0afb, type: 3}
+  m_Name: DecorationShopCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::StudyRoomShopCatalog
+  items:
+  - id: plant-stand
+    displayName: "C\xE2y xanh nh\u1ECF"
+    description: "Th\xEAm m\u1ED9t ch\xFAt xanh v\xE0o g\xF3c h\u1ECDc"
+    price: 10
+    prefab: {fileID: 661804491987247849, guid: ddfc44fd6d53fb149bd11c1d6f404220, type: 3}
+    thumbnail: {fileID: 2800000, guid: 6b4af08fd91776149b00e62df33aeb7a, type: 3}
+  - id: floor-lamp
+    displayName: "\u0110\xE8n \u0111\u1EE9ng \u1EA5m \xE1p"
+    description: "M\u1ED9t g\xF3c ph\xF2ng th\u1EADt \u1EA5m c\xFAng"
+    price: 20
+    prefab: {fileID: 7330710582127171637, guid: 0bcda62858223a54793370260585b5c3, type: 3}
+    thumbnail: {fileID: 2800000, guid: 80884b7cf0ff24e41ab40e90f6ab7ed2, type: 3}
+  - id: cozy-pouf
+    displayName: "Gh\u1EBF \u0111\xF4n \xEAm"
+    description: "Chi\u1EBFc gh\u1EBF nh\u1ECF cho gi\u1EDD ngh\u1EC9"
+    price: 15
+    prefab: {fileID: 6237001907279475489, guid: c3caa0c725b1be147a54de8d1ac24bd4, type: 3}
+    thumbnail: {fileID: 2800000, guid: 00744c792525601469d1dbcba60bfbc7, type: 3}
+  - id: flower-vase
+    displayName: "B\xECnh hoa xinh"
+    description: "S\u1EAFc hoa cho kh\xF4ng gian d\u1ECBu d\xE0ng"
+    price: 10
+    prefab: {fileID: 8388596298004721359, guid: 382b0b11b501bfb4fa21471184937d16, type: 3}
+    thumbnail: {fileID: 2800000, guid: 5de3f78cf70189241baa03a7b43c97b9, type: 3}
+  - id: star-table
+    displayName: "B\xE0n ng\xF4i sao"
+    description: "B\xE0n nh\u1ECF \u0111\u1EC3 trang tr\xED g\xF3c ph\xF2ng"
+    price: 25
+    prefab: {fileID: 7771014154207698170, guid: df78aed013c1bb9449120000bf20b44a, type: 3}
+    thumbnail: {fileID: 2800000, guid: fbe8f3897edc49b42884c4c0e018343d, type: 3}
+  - id: teddy-bear
+    displayName: "G\u1EA5u b\xF4ng"
+    description: "Ng\u01B0\u1EDDi b\u1EA1n d\u1EC5 th\u01B0\u01A1ng khi h\u1ECDc
+      b\xE0i"
+    price: 5
+    prefab: {fileID: 5720360305776165117, guid: 2bfe6a9512ba87448aee7f55eb1720e5, type: 3}
+    thumbnail: {fileID: 2800000, guid: bc567d34fa0bba84086f2e12cffeba09, type: 3}
+  - id: bookcase
+    displayName: "T\u1EE7 s\xE1ch"
+    description: "S\u1EAFp x\u1EBFp nh\u1EEFng cu\u1ED1n s\xE1ch y\xEAu th\xEDch"
+    price: 35
+    prefab: {fileID: 3199780657205731134, guid: e90385349c798854da9a75f5052b724a, type: 3}
+    thumbnail: {fileID: 2800000, guid: a1e8d21a6138860439e9de0497cdc216, type: 3}
+  - id: soft-carpet
+    displayName: "Th\u1EA3m m\u1EC1m"
+    description: "T\u1EA1o m\u1ED9t g\xF3c ngh\u1EC9 ng\u01A1i th\u1EADt \xEAm"
+    price: 20
+    prefab: {fileID: 6694688305756030145, guid: 9520103974bb7e847b51b70407c7baa5, type: 3}
+    thumbnail: {fileID: 2800000, guid: 7864d983415661d4a88a20f28e499b04, type: 3}
