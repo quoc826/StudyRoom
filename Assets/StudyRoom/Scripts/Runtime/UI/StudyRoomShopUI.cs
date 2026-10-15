@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +19,13 @@ public class StudyRoomShopUI : MonoBehaviour
     private Font font;
     private Sprite rounded;
     private readonly Dictionary<string, ItemView> views = new Dictionary<string, ItemView>();
+    private readonly Dictionary<string, Button> roomViews = new Dictionary<string, Button>();
+    private Dropdown categoryDropdown;
+    private Text pageLabel;
+    private Button previousPage, nextPage;
+    private int categoryFilter = -1, page, pageCount = 1;
+    private const int PageSize = 12;
+    private bool ViewingRoomCatalog => !showingRoom && !showingInventory && categoryFilter == (int)StudyRoomShopCatalog.Category.Rooms;
     private static readonly Color Ink = new Color32(79, 57, 98, 255);
     private static readonly Color Cream = new Color32(255, 247, 252, 255);
     private static readonly Color Pink = new Color32(245, 173, 198, 255);
@@ -62,7 +70,7 @@ public class StudyRoomShopUI : MonoBehaviour
         SetShortcutsVisible(!(rewards && rewards.IsOpen));
         if (!IsPlacing || !placementBar) return;
         confirm.interactable = decorations.ValidPlacement;
-        placementHint.text = decorations.ValidPlacement ? "Vị trí hợp lệ · Bấm Đặt để lưu vào phòng" : "Chọn chỗ trống trên sàn, bên trong phòng";
+        placementHint.text = decorations.ValidPlacement ? "Vị trí hợp lệ · Chuột phải hoặc bấm Đặt để xác nhận" : "Chọn chỗ trống trên sàn, bên trong phòng";
     }
 
     public void SetShortcutsVisible(bool visible)
@@ -104,6 +112,7 @@ public class StudyRoomShopUI : MonoBehaviour
 
     private void ShowShop()
     {
+        page = 0;
         showingRoom = showingInventory = false;
         title.text = "Shop · Trang trí phòng";
         BuildItemRows(); BindItemButtons(); Refresh();
@@ -112,6 +121,8 @@ public class StudyRoomShopUI : MonoBehaviour
 
     private void ShowRoom()
     {
+        ResetRoomCategory();
+        page = 0;
         showingInventory = false;
         showingRoom = true; placedSignature = null;
         title.text = "Đồ trong phòng";
@@ -120,6 +131,8 @@ public class StudyRoomShopUI : MonoBehaviour
 
     private void ShowInventory()
     {
+        ResetRoomCategory();
+        page = 0;
         showingRoom = false; showingInventory = true; inventorySignature = null;
         title.text = "Đồ của bạn";
         message.text = "Vật phẩm đã mua · Xem số lượng trong kho và chọn Đặt";
@@ -161,6 +174,17 @@ public class StudyRoomShopUI : MonoBehaviour
         shopTab.GetComponent<Image>().color = showingRoom || showingInventory ? Pale : Pink;
         inventoryTab.GetComponent<Image>().color = showingInventory ? Pink : Pale;
         roomTab.GetComponent<Image>().color = showingRoom ? Pink : Pale;
+        if (ViewingRoomCatalog)
+        {
+            foreach (var entry in roomViews)
+            {
+                var room = GetComponent<StudyRoomRoomLoader>().catalog.FindRoom(entry.Key);
+                bool owned = economy.Progress.RoomUnlocked(entry.Key);
+                entry.Value.interactable = !owned && economy.Progress.Coins >= room.price;
+                entry.Value.GetComponentInChildren<Text>().text = owned ? "Đã sở hữu" : "Mua · " + room.price;
+            }
+            return;
+        }
         if (showingRoom)
         {
             string signature = "";
@@ -187,7 +211,9 @@ public class StudyRoomShopUI : MonoBehaviour
         {
             var item = catalog.Find(entry.Key);
             int stock = economy.Progress.DecorationCount(entry.Key);
-            entry.Value.stock.text = "Trong kho: " + stock + (showingInventory ? " · Đã đặt: " + PlacedCount(entry.Key) : "");
+            entry.Value.stock.text = economy.Progress.OwnedDecorationCount(entry.Key) == 0
+                ? "Chưa sở hữu · Mua để sử dụng"
+                : "Trong kho: " + stock + (showingInventory ? " · Đã đặt: " + PlacedCount(entry.Key) : "");
             if (entry.Value.buy) entry.Value.buy.interactable = economy.Progress.Coins >= item.price;
             entry.Value.place.interactable = stock > 0;
         }
@@ -244,7 +270,7 @@ public class StudyRoomShopUI : MonoBehaviour
             var placement = Rect(root, "PlacementBar", new Vector2(560, 96));
             placement.anchorMin = placement.anchorMax = placement.pivot = new Vector2(0.5f, 0);
             placement.anchoredPosition = new Vector2(0, 164); Panel(placement, Cream);
-            Label(placement, "Hint", "Chọn vị trí trên sàn rồi bấm Đặt", 15, new Vector2(520, 32), new Vector2(18, -4));
+            Label(placement, "Hint", "Chọn vị trí · Chuột phải hoặc bấm Đặt để xác nhận", 15, new Vector2(520, 32), new Vector2(18, -4));
             var rotation = Button(placement, "Rotate", "Xoay 90°", new Vector2(150, 38), Pale); TopLeft(rotation.GetComponent<RectTransform>(), new Vector2(18, -49));
             var accept = Button(placement, "Confirm", "Đặt", new Vector2(150, 38), Pink); TopLeft(accept.GetComponent<RectTransform>(), new Vector2(205, -49));
             var abort = Button(placement, "Cancel", "Hủy", new Vector2(150, 38), Pale); TopLeft(abort.GetComponent<RectTransform>(), new Vector2(392, -49));
@@ -275,12 +301,14 @@ public class StudyRoomShopUI : MonoBehaviour
         content = panel.Find("ItemList/Content").GetComponent<RectTransform>(); scroll = panel.Find("ItemList").GetComponent<ScrollRect>();
         confirm = placementBar.transform.Find("Confirm").GetComponent<Button>(); rotate = placementBar.transform.Find("Rotate").GetComponent<Button>(); cancel = placementBar.transform.Find("Cancel").GetComponent<Button>();
         placementHint = placementBar.transform.Find("Hint").GetComponent<Text>();
+        BuildCategoryNavigation(panel);
         BuildItemRows();
     }
 
     private void ClearRows()
     {
         views.Clear();
+        roomViews.Clear();
         for (int i = content.childCount - 1; i >= 0; i--)
         {
             var child = content.GetChild(i).gameObject; child.SetActive(false);
@@ -292,7 +320,8 @@ public class StudyRoomShopUI : MonoBehaviour
     {
         ClearRows();
         if (!catalog) return;
-        foreach (var item in catalog.items)
+        if (ViewingRoomCatalog) { BuildRoomPurchaseRows(); return; }
+        foreach (var item in Paginate(FilteredItems()))
         {
             var row = ItemCard(item.id, item.displayName, item.description, item.thumbnail);
             var stock = Label(row, "Stock", "Trong kho: 0", 13, new Vector2(250, 24), new Vector2(122, -91));
@@ -326,7 +355,7 @@ public class StudyRoomShopUI : MonoBehaviour
     private void BuildInventoryRows()
     {
         ClearRows();
-        foreach (var item in catalog.items)
+        foreach (var item in Paginate(FilteredItems().Where(i => economy.Progress.OwnedDecorationCount(i.id) > 0)))
         {
             int stock = economy.Progress.DecorationCount(item.id);
             if (stock <= 0 && PlacedCount(item.id) <= 0) continue;
@@ -339,7 +368,7 @@ public class StudyRoomShopUI : MonoBehaviour
         if (views.Count == 0)
         {
             var empty = Rect(content, "Empty", new Vector2(500, 110)); empty.gameObject.AddComponent<LayoutElement>().preferredHeight = 110;
-            var label = Label(empty, "Hint", "Kho của bạn đang trống. Ghé Shop để mua đồ trang trí nhé!", 17, Vector2.zero, Vector2.zero);
+            var label = Label(empty, "Hint", "Chưa có vật phẩm trong nhóm này. Ghé Shop để mua thêm nhé!", 17, Vector2.zero, Vector2.zero);
             Stretch(label.rectTransform); label.alignment = TextAnchor.MiddleCenter;
         }
     }
@@ -348,9 +377,20 @@ public class StudyRoomShopUI : MonoBehaviour
     {
         ClearRows();
         bool any = false;
-        foreach (var room in economy.Progress.SavedRooms)
-            if (room.id == decorations.RoomId)
-                foreach (var placed in room.decorations)
+        if (decorations.RoomId == "initial-room")
+        {
+            var info = Rect(content, "StarterFurnitureInfo", new Vector2(500, 120));
+            info.gameObject.AddComponent<LayoutElement>().preferredHeight = 120;
+            var label = Label(info, "Hint",
+                "Nội thất có sẵn của phòng khởi đầu chưa thuộc sở hữu của bạn. Bạn có thể dùng tại đây, nhưng cần mua trong Shop để có đồ trong kho và trang trí phòng khác.",
+                16, Vector2.zero, Vector2.zero);
+            Stretch(label.rectTransform);
+            label.alignment = TextAnchor.MiddleCenter;
+            any = true;
+        }
+        var savedRoom = economy.Progress.SavedRooms.FirstOrDefault(room => room.id == decorations.RoomId);
+        var placedItems = savedRoom == null ? new List<StudyRoomProgress.PlacedDecoration>() : savedRoom.decorations;
+        foreach (var placed in Paginate(placedItems.Where(p => catalog.Find(p.itemId) != null && MatchesCategory(catalog.Find(p.itemId)))))
                 {
                     var item = catalog.Find(placed.itemId); if (item == null) continue;
                     any = true;
@@ -368,6 +408,141 @@ public class StudyRoomShopUI : MonoBehaviour
         }
     }
 
+    private bool MatchesCategory(StudyRoomShopCatalog.Item item) => categoryFilter < 0 || (int)item.category == categoryFilter;
+
+    private IEnumerable<StudyRoomShopCatalog.Item> FilteredItems() => catalog.items.Where(i => i != null && MatchesCategory(i))
+        .OrderBy(i => i.category).ThenBy(i => i.displayName);
+
+    private IEnumerable<T> Paginate<T>(IEnumerable<T> source)
+    {
+        var entries = source.ToList();
+        pageCount = Mathf.Max(1, Mathf.CeilToInt(entries.Count / (float)PageSize));
+        page = Mathf.Clamp(page, 0, pageCount - 1);
+        if (pageLabel) pageLabel.text = (page + 1) + " / " + pageCount + " · " + entries.Count + " mục";
+        if (previousPage) previousPage.interactable = page > 0;
+        if (nextPage) nextPage.interactable = page + 1 < pageCount;
+        return entries.Skip(page * PageSize).Take(PageSize);
+    }
+
+    private void ResetRoomCategory()
+    {
+        if (categoryFilter != (int)StudyRoomShopCatalog.Category.Rooms) return;
+        categoryFilter = -1;
+        if (categoryDropdown) categoryDropdown.SetValueWithoutNotify(0);
+    }
+
+    private void ChangePage(int direction)
+    {
+        page = Mathf.Clamp(page + direction, 0, pageCount - 1);
+        RebuildSelectedList();
+    }
+
+    private void RebuildSelectedList()
+    {
+        if (showingRoom) { placedSignature = null; Refresh(); }
+        else if (showingInventory) { inventorySignature = null; Refresh(); }
+        else { BuildItemRows(); BindItemButtons(); Refresh(); }
+        scroll.verticalNormalizedPosition = 1f;
+    }
+
+    private void BuildRoomPurchaseRows()
+    {
+        var loader = GetComponent<StudyRoomRoomLoader>();
+        if (!loader || !loader.catalog) { Paginate(new StudyRoomCatalog.Room[0]); return; }
+        foreach (var room in Paginate(loader.catalog.rooms.Where(r => r.canCreate)))
+        {
+            var row = ItemCard(room.id, room.displayName, "Phòng trống · Tự trang trí bằng đồ trong kho", room.thumbnail);
+            var buy = Button(row, "BuyRoom", "Mua · " + room.price, new Vector2(142, 40), Pink);
+            Right(buy.GetComponent<RectTransform>(), -12, -38);
+            string id = room.id;
+            buy.onClick.AddListener(() =>
+            {
+                message.text = economy.Progress.TryUnlockRoom(id)
+                    ? "Đã mua phòng · Về Home, chọn Tạo phòng mới để đặt tên và sử dụng"
+                    : "Chưa đủ coin để mua phòng này.";
+                Refresh();
+            });
+            roomViews[id] = buy;
+        }
+    }
+
+    private void BuildCategoryNavigation(Transform panel)
+    {
+        var viewport = panel.Find("ItemList").GetComponent<RectTransform>();
+        viewport.offsetMin = new Vector2(20, 76);
+        viewport.offsetMax = new Vector2(-20, -244);
+        var footer = panel.Find("Footer");
+        if (footer) footer.gameObject.SetActive(false);
+        var navigation = panel.Find("CategoryNavigation");
+        if (!navigation)
+        {
+            var row = Rect(panel, "CategoryNavigation", new Vector2(440, 38));
+            TopLeft(row, new Vector2(24, -190));
+            Panel(row, Pale);
+            categoryDropdown = row.gameObject.AddComponent<Dropdown>();
+            var caption = Label(row, "Caption", "Tất cả", 16, Vector2.zero, Vector2.zero);
+            Stretch(caption.rectTransform);
+            caption.rectTransform.offsetMin = new Vector2(14, 0);
+            caption.rectTransform.offsetMax = new Vector2(-32, 0);
+            var arrow = Label(row, "Arrow", "▼", 13, new Vector2(24, 36), Vector2.zero);
+            Right(arrow.rectTransform, -8, 0);
+            var template = Rect(row, "Template", new Vector2(0, 260));
+            template.anchorMin = new Vector2(0, 0); template.anchorMax = new Vector2(1, 0);
+            template.pivot = new Vector2(0.5f, 1); template.anchoredPosition = new Vector2(0, -4);
+            Panel(template, Cream);
+            var clip = Rect(template, "Viewport", Vector2.zero); Stretch(clip);
+            clip.gameObject.AddComponent<RectMask2D>();
+            var list = Rect(clip, "Content", new Vector2(0, 38));
+            list.anchorMin = new Vector2(0, 1); list.anchorMax = Vector2.one; list.pivot = new Vector2(0.5f, 1);
+            var option = Rect(list, "Item", new Vector2(0, 38));
+            option.anchorMin = new Vector2(0, 1); option.anchorMax = Vector2.one; option.pivot = new Vector2(0.5f, 1);
+            var background = Panel(option, Cream);
+            var toggle = option.gameObject.AddComponent<Toggle>(); toggle.targetGraphic = background;
+            var check = Rect(option, "Checkmark", new Vector2(12, 12));
+            check.anchorMin = check.anchorMax = new Vector2(0, 0.5f); check.anchoredPosition = new Vector2(14, 0);
+            toggle.graphic = Panel(check, Pink);
+            var label = Label(option, "Label", "Nhóm", 16, Vector2.zero, Vector2.zero);
+            Stretch(label.rectTransform); label.rectTransform.offsetMin = new Vector2(30, 0);
+            var scroller = template.gameObject.AddComponent<ScrollRect>();
+            scroller.horizontal = false; scroller.viewport = clip; scroller.content = list;
+            scroller.movementType = ScrollRect.MovementType.Clamped;
+            categoryDropdown.captionText = caption; categoryDropdown.itemText = label; categoryDropdown.template = template;
+            categoryDropdown.targetGraphic = row.GetComponent<Image>();
+            template.gameObject.SetActive(false);
+            var previous = Button(panel, "PreviousPage", "‹ Trước", new Vector2(116, 38), Pale);
+            var previousRect = previous.GetComponent<RectTransform>();
+            previousRect.anchorMin = previousRect.anchorMax = previousRect.pivot = new Vector2(0, 0);
+            previousRect.anchoredPosition = new Vector2(24, 20);
+            var nextButton = Button(panel, "NextPage", "Sau ›", new Vector2(116, 38), Pale);
+            var nextRect = nextButton.GetComponent<RectTransform>();
+            nextRect.anchorMin = nextRect.anchorMax = nextRect.pivot = new Vector2(1, 0);
+            nextRect.anchoredPosition = new Vector2(-24, 20);
+            var pageText = Label(panel, "PageLabel", "", 15, new Vector2(240, 38), Vector2.zero);
+            pageText.rectTransform.anchorMin = pageText.rectTransform.anchorMax = pageText.rectTransform.pivot = new Vector2(0.5f, 0);
+            pageText.rectTransform.anchoredPosition = new Vector2(0, 20);
+        }
+        categoryDropdown = panel.Find("CategoryNavigation").GetComponent<Dropdown>();
+        categoryDropdown.ClearOptions();
+        var options = new List<string> { "Tất cả" };
+        foreach (StudyRoomShopCatalog.Category category in System.Enum.GetValues(typeof(StudyRoomShopCatalog.Category)))
+            options.Add(StudyRoomShopCatalog.CategoryName(category));
+        categoryDropdown.AddOptions(options);
+        categoryDropdown.SetValueWithoutNotify(categoryFilter + 1);
+        categoryDropdown.onValueChanged.RemoveAllListeners();
+        categoryDropdown.onValueChanged.AddListener(value =>
+        {
+            categoryFilter = value - 1;
+            if (showingRoom || showingInventory) ResetRoomCategory();
+            page = 0;
+            RebuildSelectedList();
+        });
+        previousPage = panel.Find("PreviousPage").GetComponent<Button>();
+        nextPage = panel.Find("NextPage").GetComponent<Button>();
+        pageLabel = panel.Find("PageLabel").GetComponent<Text>();
+        previousPage.onClick.RemoveAllListeners(); previousPage.onClick.AddListener(() => ChangePage(-1));
+        nextPage.onClick.RemoveAllListeners(); nextPage.onClick.AddListener(() => ChangePage(1));
+    }
+
     private RectTransform ItemCard(string id, string title, string description, Texture2D thumbnail)
     {
         var row = Rect(content, id, new Vector2(540, 124)); Panel(row, Pale);
@@ -375,6 +550,11 @@ public class StudyRoomShopUI : MonoBehaviour
         var photo = Rect(row, "Thumbnail", new Vector2(96, 96)); TopLeft(photo, new Vector2(12, -14));
         var image = photo.gameObject.AddComponent<RawImage>(); image.texture = thumbnail; image.raycastTarget = false;
         var name = Label(row, "Title", title, 21, Vector2.zero, Vector2.zero);
+        name.resizeTextForBestFit = true;
+        name.resizeTextMinSize = 14;
+        name.resizeTextMaxSize = 21;
+        name.verticalOverflow = VerticalWrapMode.Truncate;
+        name.supportRichText = false;
         name.rectTransform.anchorMin = new Vector2(0, 1); name.rectTransform.anchorMax = Vector2.one;
         name.rectTransform.offsetMin = new Vector2(122, -44); name.rectTransform.offsetMax = new Vector2(-170, -8);
         var detail = Label(row, "Description", description, 13, Vector2.zero, Vector2.zero);

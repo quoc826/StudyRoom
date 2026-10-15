@@ -11,6 +11,7 @@ public class StudyRoomEconomy : MonoBehaviour
     public bool CanStudy => SceneManager.GetActiveScene().name == StudyRoomSession.RoomScene;
     public event Action StateChanged;
     public event Action<int> CoinsEarned;
+    public event Action<int> QuestCompleted;
     private double previousTime;
     private double saveTime;
     private double refreshTime;
@@ -28,6 +29,7 @@ public class StudyRoomEconomy : MonoBehaviour
         instance = root.AddComponent<StudyRoomEconomy>();
         instance.Progress = new StudyRoomProgress(catalog);
         instance.Progress.Changed += instance.Notify;
+        instance.Progress.QuestCompleted += instance.OnQuestCompleted;
         instance.Progress.VisitDay(DateTime.Now);
         instance.previousTime = Time.realtimeSinceStartupAsDouble;
         instance.previousRunInBackground = Application.runInBackground;
@@ -76,10 +78,14 @@ public class StudyRoomEconomy : MonoBehaviour
         Tick();
         if (!Progress.TryClaimQuest(index, DateTime.Now)) return false;
         CoinsEarned?.Invoke(StudyRoomDailyQuests.All[index].Coins);
+        // The initial daily visit can complete before the room character exists.
+        if (StudyRoomDailyQuests.All[index].Type == StudyRoomDailyQuests.Goal.Visit)
+            QuestCompleted?.Invoke(index);
         return true;
     }
 
     private void Notify() => StateChanged?.Invoke();
+    private void OnQuestCompleted(int index) => QuestCompleted?.Invoke(index);
 
     private void SceneChanged(Scene previous, Scene next)
     {
@@ -103,7 +109,12 @@ public class StudyRoomEconomy : MonoBehaviour
     {
         if (instance != this) return;
         SceneManager.activeSceneChanged -= SceneChanged;
-        if (Progress != null) { Progress.Flush(); Progress.Changed -= Notify; }
+        if (Progress != null)
+        {
+            Progress.Flush();
+            Progress.Changed -= Notify;
+            Progress.QuestCompleted -= OnQuestCompleted;
+        }
         Application.runInBackground = previousRunInBackground;
         instance = null;
     }

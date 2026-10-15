@@ -15,6 +15,8 @@ public class StudyRoomStartScreen : MonoBehaviour
     public string SelectedRoomId { get; private set; }
     public string SelectedCharacterId { get; private set; }
     private GameObject screen, start, picker, popup, confirmation;
+    private GameObject roomNaming;
+    private InputField roomNameInput;
     private RectTransform listContent;
     private ScrollRect scroll;
     private Text heading, helper, wallet, message;
@@ -57,6 +59,7 @@ public class StudyRoomStartScreen : MonoBehaviour
         picker.SetActive(false);
         popup.SetActive(false);
         confirmation.SetActive(false);
+        roomNaming.SetActive(false);
         previewRig.SetActive(true);
         RefreshWallet();
     }
@@ -78,7 +81,10 @@ public class StudyRoomStartScreen : MonoBehaviour
             var character = catalog.FindCharacter(save.characterId);
             if (room == null || character == null) continue;
             var selected = save;
-            Card(save.name, room.displayName + " · " + character.displayName,
+            string description = save.id == "initial-room"
+                ? "Phòng khởi đầu đủ nội thất · Học để kiếm coin mua phòng mới"
+                : room.displayName + " · " + character.displayName;
+            Card(save.name, description,
                 "Vào phòng", room.thumbnail, false, () => EnterRoom(selected));
         }
     }
@@ -87,6 +93,7 @@ public class StudyRoomStartScreen : MonoBehaviour
     {
         SelectedRoomId = null;
         SelectedCharacterId = null;
+        roomNameInput.text = "";
         ShowRoomChoices();
     }
 
@@ -123,7 +130,7 @@ public class StudyRoomStartScreen : MonoBehaviour
             ? "BƯỚC 2 / 2 · CuteGirl là người bạn đầu tiên của bạn"
             : "BƯỚC 2 / 2 · Chọn người bạn cùng học");
         next.gameObject.SetActive(true);
-        next.transform.Find("Label").GetComponent<Text>().text = "Tạo phòng & bắt đầu";
+        next.transform.Find("Label").GetComponent<Text>().text = "Tiếp theo · Đặt tên phòng";
         next.interactable = !string.IsNullOrEmpty(SelectedCharacterId);
         foreach (var character in catalog.characters)
         {
@@ -144,8 +151,25 @@ public class StudyRoomStartScreen : MonoBehaviour
 
     public void CreateSelectedRoom()
     {
-        var saved = Progress.CreateRoom(SelectedRoomId, SelectedCharacterId);
+        if (loadingRoom) return;
+        var room = catalog.FindRoom(SelectedRoomId);
+        if (room == null || !room.canCreate || !Progress.RoomUnlocked(SelectedRoomId) ||
+            !Progress.CharacterUnlocked(SelectedCharacterId))
+        {
+            message.text = "Hãy chọn phòng và nhân vật đã mở khóa.";
+            return;
+        }
+        roomNaming.SetActive(true);
+        roomNameInput.Select();
+        roomNameInput.ActivateInputField();
+    }
+
+    private void ConfirmCreateRoom()
+    {
+        if (loadingRoom) return;
+        var saved = Progress.CreateRoom(SelectedRoomId, SelectedCharacterId, roomNameInput.text);
         if (saved == null) { message.text = "Hãy chọn phòng và nhân vật đã mở khóa."; return; }
+        roomNaming.SetActive(false);
         EnterRoom(saved);
     }
 
@@ -195,6 +219,7 @@ public class StudyRoomStartScreen : MonoBehaviour
 
     private void BeginPicker(string title, string description)
     {
+        roomNaming.SetActive(false);
         start.SetActive(false); popup.SetActive(false); picker.SetActive(true);
         previewRig.SetActive(false);
         heading.text = title; helper.text = description; message.text = "";
@@ -207,6 +232,7 @@ public class StudyRoomStartScreen : MonoBehaviour
 
     private void Back()
     {
+        if (roomNaming.activeSelf) { roomNaming.SetActive(false); return; }
         if (confirmation.activeSelf) { confirmation.SetActive(false); return; }
         if (picker.activeSelf && choosingCharacters) { ShowRoomChoices(); return; }
         ShowStartScreen(); ShowRoomPopup();
@@ -285,6 +311,34 @@ public class StudyRoomStartScreen : MonoBehaviour
         Button(confirmCard, "Buy", "Mở khóa", new Vector2(214, 54), new Vector2(116, -84), pink, () => { });
         Button(confirmCard, "Cancel", "Để sau", new Vector2(214, 54), new Vector2(-116, -84), lavender, () => confirmation.SetActive(false));
         confirmation.SetActive(false);
+
+        roomNaming = Modal(root, "RoomNaming", new Vector2(530, 360));
+        var namingCard = roomNaming.transform.Find("Card");
+        Label(namingCard, "Title", "Đặt tên phòng học", 27, new Vector2(480, 60), new Vector2(0, 126), true);
+        Label(namingCard, "Hint", "Để trống để dùng tên mặc định", 17, new Vector2(460, 44), new Vector2(0, 74));
+        var inputRect = Rect(namingCard, "RoomName", new Vector2(440, 56), new Vector2(0, 8));
+        var inputBackground = Image(inputRect, Color.white);
+        roomNameInput = inputRect.gameObject.AddComponent<InputField>();
+        roomNameInput.targetGraphic = inputBackground;
+        roomNameInput.lineType = InputField.LineType.SingleLine;
+        roomNameInput.characterLimit = 40;
+        var inputText = Label(inputRect, "Text", "", 20, Vector2.zero, Vector2.zero);
+        Stretch(inputText.rectTransform);
+        inputText.rectTransform.offsetMin = new Vector2(14, 5);
+        inputText.rectTransform.offsetMax = new Vector2(-14, -5);
+        inputText.alignment = TextAnchor.MiddleLeft;
+        inputText.supportRichText = false;
+        var placeholder = Label(inputRect, "Placeholder", "Tên phòng của bạn…", 18, Vector2.zero, Vector2.zero);
+        Stretch(placeholder.rectTransform);
+        placeholder.rectTransform.offsetMin = new Vector2(14, 5);
+        placeholder.rectTransform.offsetMax = new Vector2(-14, -5);
+        placeholder.alignment = TextAnchor.MiddleLeft;
+        placeholder.color = new Color32(155, 139, 164, 255);
+        roomNameInput.textComponent = inputText;
+        roomNameInput.placeholder = placeholder;
+        Button(namingCard, "Create", "Tạo phòng & bắt đầu", new Vector2(250, 54), new Vector2(100, -112), pink, ConfirmCreateRoom);
+        Button(namingCard, "Cancel", "Quay lại", new Vector2(166, 54), new Vector2(-124, -112), lavender, () => roomNaming.SetActive(false));
+        roomNaming.SetActive(false);
     }
 
     private void Card(string title, string description, string action, Texture2D thumbnail, bool selected, UnityEngine.Events.UnityAction click)
@@ -298,6 +352,7 @@ public class StudyRoomStartScreen : MonoBehaviour
         picture.anchorMin = picture.anchorMax = new Vector2(0, 0.5f); picture.pivot = new Vector2(0, 0.5f);
         var raw = picture.gameObject.AddComponent<RawImage>(); raw.texture = thumbnail; raw.raycastTarget = false;
         var titleLabel = Label(rect, "Name", title, 23, Vector2.zero, Vector2.zero, true);
+        titleLabel.supportRichText = false;
         PlaceCardText(titleLabel.rectTransform, -18, -75); titleLabel.alignment = TextAnchor.MiddleLeft;
         var detail = Label(rect, "Detail", description, 15, Vector2.zero, Vector2.zero);
         PlaceCardText(detail.rectTransform, -77, -130); detail.alignment = TextAnchor.MiddleLeft;

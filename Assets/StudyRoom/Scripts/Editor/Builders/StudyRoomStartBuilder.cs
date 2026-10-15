@@ -43,7 +43,7 @@ public static class StudyRoomStartBuilder
                 options.Add(new StudyRoomCatalog.Room
                 {
                     id = "empty-" + models[i].ToLowerInvariant(), displayName = titles[i], prefab = prefab,
-                    price = i == 0 ? 0 : 100, canCreate = true, spawnPosition = Vector3.zero,
+                    price = 100, canCreate = true, spawnPosition = Vector3.zero,
                     thumbnail = Thumbnail(prefab, StudyRoomEditorPaths.Thumbnails + "/" + models[i] + ".png", false)
                 });
             }
@@ -74,13 +74,19 @@ public static class StudyRoomStartBuilder
         finally { UnityEngine.Object.DestroyImmediate(clone); }
     }
 
-    private static GameObject EmptyRoom(string model)
+    public static GameObject EmptyRoom(string model)
     {
         string path = Folder + "/Rooms/Empty_" + model + ".prefab";
         var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
         if (existing) return existing;
         var original = AssetDatabase.LoadAssetAtPath<GameObject>(StudyRoomEditorPaths.RoomModels + "/" + model + ".prefab");
         if (!original) throw new InvalidOperationException("Missing room: " + model);
+        foreach (var mesh in original.GetComponentsInChildren<MeshFilter>())
+        {
+            if (!mesh.name.Contains("_Floor") || !mesh.sharedMesh || mesh.sharedMesh.isReadable) continue;
+            var importer = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(mesh.sharedMesh)) as ModelImporter;
+            if (importer && !importer.isReadable) { importer.isReadable = true; importer.SaveAndReimport(); }
+        }
         var clone = UnityEngine.Object.Instantiate(original);
         try
         {
@@ -91,7 +97,7 @@ public static class StudyRoomStartBuilder
             {
                 var child = clone.transform.GetChild(i);
                 string name = child.name;
-                if (!name.Contains("_Floor_") && !name.Contains("_Wall_") && !name.Contains("_Window_") && !name.Contains("_Blinds_") && !name.Contains("_Curtains_"))
+                if (!System.Text.RegularExpressions.Regex.IsMatch(name, @"_(Floor|Wall|Window|Blinds|Curtains?)(_[0-9]+)?$"))
                     UnityEngine.Object.DestroyImmediate(child.gameObject);
             }
             var empty = clone.GetComponent<MeshCollider>();
@@ -115,7 +121,7 @@ public static class StudyRoomStartBuilder
         float largest = 0;
         foreach (var mf in room.GetComponentsInChildren<MeshFilter>())
         {
-            if (!mf.name.Contains("_Floor_") || !mf.sharedMesh) continue;
+            if (!mf.name.Contains("_Floor") || !mf.sharedMesh) continue;
             float area = mf.sharedMesh.bounds.size.x * mf.sharedMesh.bounds.size.z;
             if (area > largest) { largest = area; floor = mf; }
         }

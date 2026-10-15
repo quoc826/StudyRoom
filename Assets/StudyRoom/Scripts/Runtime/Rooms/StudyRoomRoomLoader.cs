@@ -39,8 +39,13 @@ public class StudyRoomRoomLoader : MonoBehaviour
             character.name = characterOption.displayName;
             var cc = character.GetComponent<CharacterController>();
             float floorY = 0;
+            float floorArea = 0;
             foreach (var renderer in room.GetComponentsInChildren<Renderer>())
-                if (renderer.name.Contains("Floor_1")) { floorY = renderer.bounds.max.y; break; }
+                if (renderer.name.Contains("Floor"))
+                {
+                    float area = renderer.bounds.size.x * renderer.bounds.size.z;
+                    if (area > floorArea) { floorArea = area; floorY = renderer.bounds.max.y; }
+                }
             if (cc)
             {
                 cc.enabled = false;

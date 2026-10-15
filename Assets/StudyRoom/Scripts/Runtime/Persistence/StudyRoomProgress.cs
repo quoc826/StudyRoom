@@ -59,6 +59,7 @@ public class StudyRoomProgress
     public int Coins => data.coins;
     public IReadOnlyList<SavedRoom> SavedRooms => data.savedRooms;
     public event Action Changed;
+    public event Action<int> QuestCompleted;
     public const double CoinIntervalSeconds = 15 * 60;
     public double NextCoinSeconds => CoinIntervalSeconds - data.rewardSeconds;
     public double DailyOnlineSeconds => data.daily.onlineSeconds;
@@ -86,6 +87,7 @@ public class StudyRoomProgress
         data.rewardSeconds = SafeSeconds(data.rewardSeconds) % CoinIntervalSeconds;
         data.daily.onlineSeconds = SafeSeconds(data.daily.onlineSeconds);
         data.daily.studySeconds = SafeSeconds(data.daily.studySeconds);
+        // The furnished starter is a fixed room, not purchased inventory or free furniture stock.
         if (data.savedRooms.Count == 0 && catalog.FindRoom(catalog.initialRoomId) != null && catalog.FindCharacter(catalog.initialCharacterId) != null)
             data.savedRooms.Add(new SavedRoom { id = "initial-room", name = "Góc học của tôi", roomId = catalog.initialRoomId, characterId = catalog.initialCharacterId });
         Save();
@@ -136,6 +138,7 @@ public class StudyRoomProgress
         else if (data.daily.visited) return;
         data.daily.visited = true;
         Save();
+        QuestCompleted?.Invoke(0);
     }
 
     /// <summary>Accepts elapsed running time, never offline wall-clock time.</summary>
@@ -144,6 +147,8 @@ public class StudyRoomProgress
         VisitDay(now);
         seconds = SafeSeconds(seconds);
         if (seconds <= 0) return 0;
+        double previousOnline = data.daily.onlineSeconds;
+        double previousStudy = data.daily.studySeconds;
         data.daily.onlineSeconds += seconds;
         if (studying) data.daily.studySeconds += seconds;
         double total = data.rewardSeconds + seconds;
@@ -155,6 +160,13 @@ public class StudyRoomProgress
             data.coins = (int)Math.Min(int.MaxValue, (long)data.coins + earned);
             // Commit the timer and coins together so reloading cannot repeat a payout.
             Save();
+        }
+        for (int i = 0; i < StudyRoomDailyQuests.All.Count; i++)
+        {
+            var quest = StudyRoomDailyQuests.All[i];
+            double before = quest.Type == StudyRoomDailyQuests.Goal.StudyTime ? previousStudy : previousOnline;
+            if (quest.Type != StudyRoomDailyQuests.Goal.Visit && before < quest.TargetSeconds &&
+                QuestProgress(i) >= quest.TargetSeconds) QuestCompleted?.Invoke(i);
         }
         return earned;
     }
@@ -184,6 +196,15 @@ public class StudyRoomProgress
     public void Flush() => Save();
 
     public int DecorationCount(string id) => data.decorationStock.Find(item => item.itemId == id)?.count ?? 0;
+
+    public int OwnedDecorationCount(string id)
+    {
+        int count = DecorationCount(id);
+        foreach (var room in data.savedRooms)
+            foreach (var placed in room.decorations)
+                if (placed.itemId == id) count++;
+        return count;
+    }
 
     public bool TryBuyDecoration(StudyRoomShopCatalog shop, string id)
     {
@@ -232,14 +253,14 @@ public class StudyRoomProgress
 
     private static double SafeSeconds(double value) => double.IsNaN(value) || double.IsInfinity(value) ? 0 : Math.Max(0, value);
 
-    public SavedRoom CreateRoom(string roomId, string characterId)
+    public SavedRoom CreateRoom(string roomId, string characterId, string roomName = null)
     {
         var room = catalog.FindRoom(roomId);
         if (room == null || !room.canCreate || !RoomUnlocked(roomId) || !CharacterUnlocked(characterId)) return null;
         var saved = new SavedRoom
         {
             id = Guid.NewGuid().ToString("N"),
-            name = "Phòng của tôi " + data.savedRooms.Count,
+            name = string.IsNullOrWhiteSpace(roomName) ? "Phòng của tôi " + data.savedRooms.Count : roomName.Trim(),
             roomId = roomId,
             characterId = characterId
         };

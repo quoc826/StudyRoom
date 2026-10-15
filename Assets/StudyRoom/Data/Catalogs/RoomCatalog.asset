@@ -25,30 +25,282 @@ MonoBehaviour:
     displayName: "Ph\xF2ng nh\u1ECF d\u1ECBu d\xE0ng"
     prefab: {fileID: 5977278957981676344, guid: f6a89f1f26d81ea4396833f0c0af5b02, type: 3}
     thumbnail: {fileID: 2800000, guid: 098bfba39c76c8d40b7e14d837c4432d, type: 3}
-    price: 0
+    price: 100
     canCreate: 1
-    spawnPosition: {x: 0, y: 0, z: 0}
+    spawnPosition: {x: -0.00000139073, y: 0, z: 0}
   - id: empty-office_24
     displayName: "G\xF3c l\xE0m vi\u1EC7c m\u1EDBi"
     prefab: {fileID: 8416012126061692547, guid: e5266eb3a52745a43812e4413b60bd3f, type: 3}
     thumbnail: {fileID: 2800000, guid: 7c614ec7afc4b50429e99221528ad337, type: 3}
     price: 100
     canCreate: 1
-    spawnPosition: {x: 0, y: 0, z: 0}
+    spawnPosition: {x: 0.014542592, y: 0, z: 0.01321236}
   - id: empty-office_35
     displayName: "Kh\xF4ng gian s\xE1ng t\u1EA1o"
     prefab: {fileID: 3042326607796866896, guid: 19ca82c405376c141b83fade8598aaf7, type: 3}
     thumbnail: {fileID: 2800000, guid: a80a342e85630344aa7948a580c6b0e6, type: 3}
     price: 100
     canCreate: 1
-    spawnPosition: {x: 0, y: 0, z: 0}
+    spawnPosition: {x: 0.012850522, y: 0, z: 0.0039801844}
   - id: empty-study_room_11
     displayName: "Ph\xF2ng h\u1ECDc y\xEAn t\u0129nh"
     prefab: {fileID: 5460436058238002501, guid: 2544b20fb83e90949bc90bbc07fbbe67, type: 3}
     thumbnail: {fileID: 2800000, guid: c5d1c9f6c9538ba4cb7f9910c4d26c9c, type: 3}
     price: 100
     canCreate: 1
-    spawnPosition: {x: 0, y: 0, z: 0}
+    spawnPosition: {x: 0.0000003683636, y: 0, z: 0.000000050542827}
+  - id: empty-bathoom_4
+    displayName: "Ph\xF2ng t\u1EAFm \xB7 4"
+    prefab: {fileID: 2473445860061929628, guid: 497f390fb84dd834aa300f42e4e1e6f3, type: 3}
+    thumbnail: {fileID: 2800000, guid: 256252675d541294ebe972c6f77d998f, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.00000006124384, y: 0, z: -0.6344468}
+  - id: empty-bathroom_16
+    displayName: "Ph\xF2ng t\u1EAFm \xB7 16"
+    prefab: {fileID: 5888219817138981969, guid: c0ae846d0639c29449e55eb7eaa6fb8e, type: 3}
+    thumbnail: {fileID: 2800000, guid: 589e7339d19db7b48849223659df4fd5, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.00000022511453, y: 0, z: -0.93484455}
+  - id: empty-bathroom_23
+    displayName: "Ph\xF2ng t\u1EAFm \xB7 23"
+    prefab: {fileID: 8198018992436608775, guid: 83bc9097fc87b244f80b6bd73297cc65, type: 3}
+    thumbnail: {fileID: 2800000, guid: 5114bb0ae0471074b8a3884d9e2afe2f, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.00078795105, y: 0, z: -0.93156403}
+  - id: empty-bathroom_29
+    displayName: "Ph\xF2ng t\u1EAFm \xB7 29"
+    prefab: {fileID: 822391835312208957, guid: cce19a4fd7fd1004cbd32e53c1d6d2f8, type: 3}
+    thumbnail: {fileID: 2800000, guid: 2e2bae7e3c1bb9345936d522cdb5d14d, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.00527658, y: 0, z: -0.64128995}
+  - id: empty-bathroom_38
+    displayName: "Ph\xF2ng t\u1EAFm \xB7 38"
+    prefab: {fileID: 5414285783825392760, guid: f7418ac0751b23343a93c35e3b8e7bb4, type: 3}
+    thumbnail: {fileID: 2800000, guid: 9e07bf93ab4d0d8409173bd10a185dc1, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.0012467703, y: 0, z: 1.0817962}
+  - id: empty-bedroom_12
+    displayName: "Ph\xF2ng ng\u1EE7 \xB7 12"
+    prefab: {fileID: 1326951257854726375, guid: 2ba1fc6f78f54aa4481a540e7578f15c, type: 3}
+    thumbnail: {fileID: 2800000, guid: 348895963adabed48868159802d2eb3e, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.3336331, y: 0, z: 0.46571422}
+  - id: empty-bedroom_15
+    displayName: "Ph\xF2ng ng\u1EE7 \xB7 15"
+    prefab: {fileID: 7256739038175577545, guid: 455d999a1f46cb94a9e644b77c8896de, type: 3}
+    thumbnail: {fileID: 2800000, guid: bf5675dd5112f7a40acd9713f9478671, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.38598552, y: 0, z: 0.69893575}
+  - id: empty-bedroom_19
+    displayName: "Ph\xF2ng ng\u1EE7 \xB7 19"
+    prefab: {fileID: 143215426730833100, guid: 556e20863de9ef14fbb076f0d3c41fd3, type: 3}
+    thumbnail: {fileID: 2800000, guid: 74860fcbb2a497041860b0bc3b8f556c, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.28762534, y: 0, z: -0.22716095}
+  - id: empty-bedroom_25
+    displayName: "Ph\xF2ng ng\u1EE7 \xB7 25"
+    prefab: {fileID: 697325428883329104, guid: 8b4daa523a01af645b555cae2c14bed1, type: 3}
+    thumbnail: {fileID: 2800000, guid: 2aa9486b3fa34e947bccdac85be844c9, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.35054395, y: 0, z: 0.7102077}
+  - id: empty-bedroom_31
+    displayName: "Ph\xF2ng ng\u1EE7 \xB7 31"
+    prefab: {fileID: 3947758971982067868, guid: b5cab4fcffbcf3a44832fd0d80d2338d, type: 3}
+    thumbnail: {fileID: 2800000, guid: 3257f11347c856b4c89c3a870e647916, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.001248041, y: 0, z: -0.6348784}
+  - id: empty-bedroom_6
+    displayName: "Ph\xF2ng ng\u1EE7 \xB7 6"
+    prefab: {fileID: 7069426516181244886, guid: a19228d2c6e3c494ba8d21f5e393a64d, type: 3}
+    thumbnail: {fileID: 2800000, guid: 93cb730e187757f47b18208c043d75af, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.004950235, y: 0, z: 0.20732455}
+  - id: empty-children_room_2
+    displayName: "Ph\xF2ng tr\u1EBB em \xB7 2"
+    prefab: {fileID: 5380446611957432593, guid: 09bf9651eb6e7274bbb066e995c277a5, type: 3}
+    thumbnail: {fileID: 2800000, guid: a34bd874f0cb5a144943ececf81523ca, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.00000023841858, y: 0, z: -0.94280905}
+  - id: empty-childrens_room_18
+    displayName: "Ph\xF2ng tr\u1EBB em \xB7 18"
+    prefab: {fileID: 7251013286080041387, guid: 529bbd4fd221b8b4b90546ef2c4fd1a0, type: 3}
+    thumbnail: {fileID: 2800000, guid: 26f6f7922a8abbb4eaa7a8bf4d4d13db, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.010079022, y: 0, z: -0.600084}
+  - id: empty-childrens_room_22
+    displayName: "Ph\xF2ng tr\u1EBB em \xB7 22"
+    prefab: {fileID: 5948587309661195328, guid: dd87fd378dcc2d84f8d8e8cf47c4a61f, type: 3}
+    thumbnail: {fileID: 2800000, guid: 94f5479ac1ebce143b36d2402b1c8316, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.008194606, y: 0, z: 0.929149}
+  - id: empty-childrens_room_33
+    displayName: "Ph\xF2ng tr\u1EBB em \xB7 33"
+    prefab: {fileID: 2088877042380329185, guid: 0c9e531b1a5f47d44b3f3bf479f375f8, type: 3}
+    thumbnail: {fileID: 2800000, guid: 21ef18345fc216149913538086ae4e42, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.47104916, y: 0, z: -0.46905243}
+  - id: empty-frontyard_17
+    displayName: "S\xE2n v\u01B0\u1EDDn \xB7 17"
+    prefab: {fileID: 888505638024310856, guid: e69c746cc65667247b9dd133aa49467c, type: 3}
+    thumbnail: {fileID: 2800000, guid: 6ae8e4e8f6ae2ec45af713cbd903aec3, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.00013605754, y: 0, z: 0.935335}
+  - id: empty-greenhouse_7
+    displayName: "Nh\xE0 k\xEDnh \xB7 7"
+    prefab: {fileID: 428106053009661211, guid: f27a533d65da5214c8b0b69f58c98131, type: 3}
+    thumbnail: {fileID: 2800000, guid: 24dffcd22314c6243beadaa71767e9ca, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.00027141123, y: 0, z: -0.9353349}
+  - id: empty-kitchen_14
+    displayName: "Ph\xF2ng b\u1EBFp \xB7 14"
+    prefab: {fileID: 5564929600134512480, guid: 7bd94346c4f7dd34fb86ba7793a73778, type: 3}
+    thumbnail: {fileID: 2800000, guid: af1d397c2059b0d4dba51698a060e175, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.0051608887, y: 0, z: 0.13604276}
+  - id: empty-kitchen_26
+    displayName: "Ph\xF2ng b\u1EBFp \xB7 26"
+    prefab: {fileID: 3514641804910191424, guid: 1467662bd71425b4599deebcb35e0ea4, type: 3}
+    thumbnail: {fileID: 2800000, guid: 08f8d39098d66d340b0fead11ff09393, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.017743796, y: 0, z: 0.060961742}
+  - id: empty-kitchen_32
+    displayName: "Ph\xF2ng b\u1EBFp \xB7 32"
+    prefab: {fileID: 350234619394911411, guid: deb6ca9011e57754285649a96b252380, type: 3}
+    thumbnail: {fileID: 2800000, guid: 50cd9fcd8f2b5364c9b019966e6f3472, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.005481074, y: 0, z: 0.053639114}
+  - id: empty-kitchen_5
+    displayName: "Ph\xF2ng b\u1EBFp \xB7 5"
+    prefab: {fileID: 1268824803948098939, guid: b90f4e0fa4b6b734d90bf1fd7649fbe7, type: 3}
+    thumbnail: {fileID: 2800000, guid: dc80902bee4c97c44be66ef7dcb99aa1, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.051660698, y: 0, z: 0.22669674}
+  - id: empty-laundry_34
+    displayName: "Ph\xF2ng gi\u1EB7t \xB7 34"
+    prefab: {fileID: 2127992720859154333, guid: f01fe15f623fd4d49994ba39ac28ee5d, type: 3}
+    thumbnail: {fileID: 2800000, guid: adf62d9bd14f42f47b39b657c28b17ec, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.47008756, y: 0, z: 0.463513}
+  - id: empty-laundry_9
+    displayName: "Ph\xF2ng gi\u1EB7t \xB7 9"
+    prefab: {fileID: 7316264454966033413, guid: 8fd039705e5085244ac18a9483a4a40e, type: 3}
+    thumbnail: {fileID: 2800000, guid: f03ff1b66efdd9f4f8347a9f2681c616, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.04980148, y: 0, z: 0.18188286}
+  - id: empty-living_room_10
+    displayName: "Ph\xF2ng kh\xE1ch \xB7 10"
+    prefab: {fileID: 5520071582299524438, guid: 38d595c3f3a94fa4789ad2bc04bd8b0a, type: 3}
+    thumbnail: {fileID: 2800000, guid: eb29441cea834ae469247ccb953ec981, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.46624848, y: 0, z: 0.47273293}
+  - id: empty-living_room_20
+    displayName: "Ph\xF2ng kh\xE1ch \xB7 20"
+    prefab: {fileID: 2075281890691501312, guid: 2a8b6a39e06bb7a49b2e56127e20fbb8, type: 3}
+    thumbnail: {fileID: 2800000, guid: b2ba659907b3aac40ba843a9ad02061d, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.01007901, y: 0, z: -0.600084}
+  - id: empty-living_room_27
+    displayName: "Ph\xF2ng kh\xE1ch \xB7 27"
+    prefab: {fileID: 551488717544620859, guid: 7dc565e05a5884642b3e98a4f03b89b8, type: 3}
+    thumbnail: {fileID: 2800000, guid: a68738ddaaf7d78498233dd6e87a452c, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.13432424, y: 0, z: -0.03170995}
+  - id: empty-living_room_3
+    displayName: "Ph\xF2ng kh\xE1ch \xB7 3"
+    prefab: {fileID: 6865965107265480819, guid: 7064ebe9638b8d441a806dea5a9903ae, type: 3}
+    thumbnail: {fileID: 2800000, guid: 3ff5acca3b404964cba5cd40def2d350, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.00000007947286, y: 0, z: 0.93569}
+  - id: empty-living_room_30
+    displayName: "Ph\xF2ng kh\xE1ch \xB7 30"
+    prefab: {fileID: 1104261693655353373, guid: 86eda5c2e415ae34394f3307c743a2d5, type: 3}
+    thumbnail: {fileID: 2800000, guid: 2bc0af1208a6a5b4d8879d6df65a4bde, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.0069010803, y: 0, z: 0.2653722}
+  - id: empty-living_room_36
+    displayName: "Ph\xF2ng kh\xE1ch \xB7 36"
+    prefab: {fileID: 8080326957893357083, guid: 0b9f03c052656a8489a0e7bb7c195682, type: 3}
+    thumbnail: {fileID: 2800000, guid: 07fcfb94dd0c81b40b8a544416dd8c1f, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.0054787397, y: 0, z: -0.63771087}
+  - id: empty-living_room_8
+    displayName: "Ph\xF2ng kh\xE1ch \xB7 8"
+    prefab: {fileID: 6889889964513411108, guid: 7d30f220dccd7914b833f0e9d2d811f3, type: 3}
+    thumbnail: {fileID: 2800000, guid: b71665fc097bd9d469153bffc343de4a, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.14949507, y: 0, z: -0.05008179}
+  - id: empty-nursery_room_40
+    displayName: "Ph\xF2ng em b\xE9 \xB7 40"
+    prefab: {fileID: 6282179643418786826, guid: 5a390921e51df734b91a0529892be1ae, type: 3}
+    thumbnail: {fileID: 2800000, guid: 22297e087638a074ab95e10ff4f21eb7, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: 0.0012485548, y: 0, z: -0.6333639}
+  - id: empty-reading_room_13
+    displayName: "Ph\xF2ng \u0111\u1ECDc s\xE1ch \xB7 13"
+    prefab: {fileID: 2185531237146624778, guid: a11f4b3c2914c7f45ad1e00433e8f5a4, type: 3}
+    thumbnail: {fileID: 2800000, guid: e43c870f2a56a4d4698925c851420000, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.46624723, y: 0, z: 0.47273293}
+  - id: empty-reading_room_21
+    displayName: "Ph\xF2ng \u0111\u1ECDc s\xE1ch \xB7 21"
+    prefab: {fileID: 1121882530779901003, guid: d576cd8b3be1a21429c2aa140d07729b, type: 3}
+    thumbnail: {fileID: 2800000, guid: aaf6c5a1a05691d4e9883ac882ba7b40, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.0100797815, y: 0, z: 1.117905}
+  - id: empty-salon_39
+    displayName: "Ph\xF2ng th\u01B0 gi\xE3n \xB7 39"
+    prefab: {fileID: 2764368725948526666, guid: f5771f04a27c7c34d922429909d2bd77, type: 3}
+    thumbnail: {fileID: 2800000, guid: 0bfc9bd9291ea5e43b7fba309cf36a41, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.08966866, y: 0, z: 0.40203515}
+  - id: empty-study_room_28
+    displayName: "Ph\xF2ng h\u1ECDc \xB7 28"
+    prefab: {fileID: 2336134519136313636, guid: 7cab226713a156a438212a25255932ef, type: 3}
+    thumbnail: {fileID: 2800000, guid: 466a8f88cd9605e40b62436cb6d4730c, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.18509118, y: 0, z: 0.34314477}
+  - id: empty-study_room_37
+    displayName: "Ph\xF2ng h\u1ECDc \xB7 37"
+    prefab: {fileID: 1680770566891442735, guid: f364c11cd6b1a754994a1373ef477a04, type: 3}
+    thumbnail: {fileID: 2800000, guid: cfa11af00b92cb14999e05faabf3dd3f, type: 3}
+    price: 100
+    canCreate: 1
+    spawnPosition: {x: -0.00578662, y: 0, z: -0.003716223}
   characters:
   - id: cute-girl
     displayName: CuteGirl

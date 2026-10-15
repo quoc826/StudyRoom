@@ -16,6 +16,7 @@ public class StudyRoomDecorations : MonoBehaviour
     private float floorY;
     private Vector3[] floorVertices;
     private int[] floorTriangles;
+    private Collider floorCollider;
     private Renderer[] environment;
     private readonly Dictionary<string, GameObject> instances = new Dictionary<string, GameObject>();
     private GameObject preview;
@@ -50,10 +51,19 @@ public class StudyRoomDecorations : MonoBehaviour
         }
         if (!floor) { room = null; return false; }
         floorY = floor.GetComponent<Renderer>().bounds.max.y;
-        floorVertices = floor.sharedMesh.vertices;
-        for (int i = 0; i < floorVertices.Length; i++) floorVertices[i] = floor.transform.TransformPoint(floorVertices[i]);
-        floorTriangles = floor.sharedMesh.triangles;
+        floorCollider = floor.GetComponent<Collider>();
+        if (!floorCollider) floorCollider = floor.gameObject.AddComponent<MeshCollider>();
+        if (floorCollider is MeshCollider meshCollider && !meshCollider.sharedMesh) meshCollider.sharedMesh = floor.sharedMesh;
+        floorVertices = Array.Empty<Vector3>();
+        floorTriangles = Array.Empty<int>();
+        if (floor.sharedMesh.isReadable)
+        {
+            floorVertices = floor.sharedMesh.vertices;
+            for (int i = 0; i < floorVertices.Length; i++) floorVertices[i] = floor.transform.TransformPoint(floorVertices[i]);
+            floorTriangles = floor.sharedMesh.triangles;
+        }
         environment = room.GetComponentsInChildren<Renderer>();
+        player = FindAnyObjectByType<PlayerController>();
         decorationRoot = new GameObject("PlayerDecorations").transform;
         decorationRoot.SetParent(room, false);
         var saved = FindRoom();
@@ -68,6 +78,8 @@ public class StudyRoomDecorations : MonoBehaviour
                 instance.transform.localRotation = Quaternion.Euler(0, placement.rotation, 0);
                 AddCollider(instance);
                 instances[placement.instanceId] = instance;
+                var animal = instance.GetComponent<StudyRoomAnimal>();
+                if (animal) animal.Initialize(this);
             }
         return true;
     }
@@ -90,6 +102,8 @@ public class StudyRoomDecorations : MonoBehaviour
         preview.name = "Decoration Preview";
         foreach (var collider in preview.GetComponentsInChildren<Collider>()) collider.enabled = false;
         foreach (var behaviour in preview.GetComponentsInChildren<MonoBehaviour>()) behaviour.enabled = false;
+        var animal = preview.GetComponent<StudyRoomAnimal>();
+        if (animal) animal.Initialize(this, false);
         player = FindAnyObjectByType<PlayerController>();
         restorePlayer = player && player.enabled;
         if (player) player.enabled = false;
@@ -104,16 +118,31 @@ public class StudyRoomDecorations : MonoBehaviour
         if (touches.Count >= 2) return;
         Vector2 position = default;
         bool hasPointer = false;
+        bool confirmWithMouse = false;
         if (touches.Count == 1) { position = touches.FirstPosition; hasPointer = true; }
 #if ENABLE_INPUT_SYSTEM
-        else if (Mouse.current != null) { position = Mouse.current.position.ReadValue(); hasPointer = true; }
+        else if (Mouse.current != null)
+        {
+            position = Mouse.current.position.ReadValue();
+            hasPointer = true;
+            confirmWithMouse = Mouse.current.rightButton.wasPressedThisFrame;
+        }
 #elif ENABLE_LEGACY_INPUT_MANAGER
-        else { position = Input.mousePosition; hasPointer = true; }
+        else
+        {
+            position = Input.mousePosition;
+            hasPointer = true;
+            confirmWithMouse = Input.GetMouseButtonDown(1);
+        }
 #endif
         if (!hasPointer || StudyRoomTouchInput.IsOverUI(position)) return;
         var plane = new Plane(Vector3.up, new Vector3(0, floorY, 0));
         var ray = Camera.main.ScreenPointToRay(position);
-        if (plane.Raycast(ray, out float distance)) SetWorldPosition(ray.GetPoint(distance));
+        if (plane.Raycast(ray, out float distance))
+        {
+            SetWorldPosition(ray.GetPoint(distance));
+            if (confirmWithMouse) ConfirmPlacement();
+        }
     }
 
     public void SetWorldPosition(Vector3 position)
@@ -134,7 +163,8 @@ public class StudyRoomDecorations : MonoBehaviour
 
     private void ValidatePreview()
     {
-        var bounds = BoundsOf(preview);
+        var animal = preview.GetComponent<StudyRoomAnimal>();
+        var bounds = animal ? animal.BoundsAt(preview.transform.position) : BoundsOf(preview);
         ValidPlacement = ContainsFloorPoint(bounds.center) &&
             ContainsFloorPoint(new Vector3(bounds.min.x, floorY, bounds.min.z)) &&
             ContainsFloorPoint(new Vector3(bounds.min.x, floorY, bounds.max.z)) &&
@@ -147,8 +177,12 @@ public class StudyRoomDecorations : MonoBehaviour
                 if (renderer && renderer.gameObject != floor.gameObject && renderer.bounds.size.y > 0.1f && bounds.Intersects(renderer.bounds))
                 { ValidPlacement = false; break; }
             foreach (var instance in instances.Values)
-                if (instance && BoundsOf(instance).size.y > 0.1f && bounds.Intersects(BoundsOf(instance)))
-                { ValidPlacement = false; break; }
+                if (instance)
+                {
+                    var otherAnimal = instance.GetComponent<StudyRoomAnimal>();
+                    Bounds other = otherAnimal ? otherAnimal.BoundsAt(instance.transform.position) : BoundsOf(instance);
+                    if (other.size.y > 0.1f && bounds.Intersects(other)) { ValidPlacement = false; break; }
+                }
             if (player && player.GetComponent<CharacterController>().bounds.Intersects(bounds)) ValidPlacement = false;
         }
         foreach (var renderer in preview.GetComponentsInChildren<Renderer>())
@@ -162,6 +196,9 @@ public class StudyRoomDecorations : MonoBehaviour
 
     private bool ContainsFloorPoint(Vector3 point)
     {
+        if (floorTriangles.Length == 0)
+            return floorCollider && floorCollider.Raycast(
+                new Ray(new Vector3(point.x, floorY + 1f, point.z), Vector3.down), out _, 2f);
         var p = new Vector2(point.x, point.z);
         for (int i = 0; i < floorTriangles.Length; i += 3)
         {
@@ -176,6 +213,50 @@ public class StudyRoomDecorations : MonoBehaviour
             if (u >= -0.001f && v >= -0.001f && u + v <= 1.001f) return true;
         }
         return false;
+    }
+
+    public bool CanAnimalOccupy(StudyRoomAnimal animal, Vector3 position)
+        => CanAnimalMove(animal, position, position);
+
+    public bool CanAnimalMove(StudyRoomAnimal animal, Vector3 from, Vector3 to)
+    {
+        if (!room || !animal) return false;
+        Bounds bounds = animal.BoundsAt(to);
+        Bounds previous = animal.BoundsAt(from);
+        if (!ContainsFloorPoint(bounds.center)) return false;
+        for (int x = -1; x <= 1; x++)
+            for (int z = -1; z <= 1; z++)
+                if (!ContainsFloorPoint(bounds.center + new Vector3(bounds.extents.x * x, 0f, bounds.extents.z * z)))
+                    return false;
+        foreach (var renderer in environment)
+            if (renderer && renderer.enabled && renderer.gameObject.activeInHierarchy &&
+                renderer.gameObject != floor.gameObject && renderer.bounds.size.y > 0.1f && BlocksAnimalMove(previous, bounds, renderer.bounds))
+                return false;
+        foreach (var instance in instances.Values)
+            if (instance && instance != animal.gameObject)
+            {
+                var otherAnimal = instance.GetComponent<StudyRoomAnimal>();
+                Bounds other = otherAnimal ? otherAnimal.BoundsAt(instance.transform.position) : BoundsOf(instance);
+                if (other.size.y > 0.1f && BlocksAnimalMove(previous, bounds, other)) return false;
+            }
+        if (player && player.GetComponent<CharacterController>().enabled &&
+            BlocksAnimalMove(previous, bounds, player.GetComponent<CharacterController>().bounds)) return false;
+        return true;
+    }
+
+    private static bool BlocksAnimalMove(Bounds from, Bounds to, Bounds obstacle)
+    {
+        if (!to.Intersects(obstacle)) return false;
+        if (!from.Intersects(obstacle)) return true;
+        // Existing saves can contain overlapping pets. Permit only steps that reduce the overlap.
+        return OverlapArea(to, obstacle) >= OverlapArea(from, obstacle) - 0.000001f;
+    }
+
+    private static float OverlapArea(Bounds a, Bounds b)
+    {
+        float x = Mathf.Max(0f, Mathf.Min(a.max.x, b.max.x) - Mathf.Max(a.min.x, b.min.x));
+        float z = Mathf.Max(0f, Mathf.Min(a.max.z, b.max.z) - Mathf.Max(a.min.z, b.min.z));
+        return x * z;
     }
 
     private static float Cross(Vector2 a, Vector2 b) => a.x * b.y - a.y * b.x;
@@ -193,6 +274,8 @@ public class StudyRoomDecorations : MonoBehaviour
         foreach (var collider in preview.GetComponentsInChildren<Collider>()) collider.enabled = true;
         AddCollider(preview);
         instances[placed.instanceId] = preview;
+        var animal = preview.GetComponent<StudyRoomAnimal>();
+        if (animal) animal.Initialize(this);
         preview = null; pending = null;
         Finish(true);
         return true;

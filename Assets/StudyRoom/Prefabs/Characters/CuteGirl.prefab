@@ -2812,6 +2812,9 @@ MonoBehaviour:
   moveSpeed: 2.5
   rotationSmoothTime: 0.12
   stoppingDistance: 0.02
+  chairInteractionDistance: 0.3
+  afkDelay: 60
+  afkLookDelay: 120
   facingOffset: 180
 --- !u!143 &6628342853557544306
 CharacterController:

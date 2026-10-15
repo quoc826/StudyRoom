@@ -87,7 +87,7 @@ public class StudyRoomZoom : MonoBehaviour
     public void ChangeZoom(float steps)
     {
         if (!roomCamera || defaultSize <= 0f) CaptureDefaultView();
-        zoom = Mathf.Clamp(zoom * Mathf.Pow(1.15f, steps), MinimumZoom, MaximumZoom);
+        zoom = Mathf.Clamp(zoom * Mathf.Pow(1.3f, steps), MinimumZoom, MaximumZoom);
     }
 
     private void OnDisable() => pinchActive = false;
