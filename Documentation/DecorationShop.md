@@ -14,6 +14,8 @@ Nút **Đồ của bạn** nằm bên dưới Shop, mở thẳng danh sách vậ
 
 Màu xanh báo vị trí hợp lệ, màu đỏ báo vị trí không hợp lệ. Vật phẩm phải nằm trọn trên sàn; đồ có chiều cao không được chồng lên nội thất khác hoặc nhân vật. Thảm mỏng có thể nằm bên dưới nội thất.
 
+Kiểm tra va chạm dùng collider thực tế sau bước lọc bằng bounds, để mesh tường ghép không chặn nhầm các vùng sàn trống trong hộp bao của tường. Đã kiểm tra lại 30 trường hợp chỉnh sửa và 9 vị trí trống trong phòng khởi đầu từng bị chặn nhầm; va chạm thật với tường vẫn bị từ chối.
+
 Mở tab **Đồ trong phòng** và chọn **Thu về kho** để lấy lại vật phẩm đã đặt từ shop. Sau đó có thể đặt lại ở vị trí khác. Thu về kho trả lại vật phẩm, không hoàn coin.
 
 ## Danh mục ban đầu
@@ -41,3 +43,15 @@ Mở tab **Đồ trong phòng** và chọn **Thu về kho** để lấy lại v�
 Save phiên bản 1/2 được nâng cấp giữ nguyên coin, phòng, đồ đã mở khóa và nhiệm vụ. Mua/đặt/thu về được lưu ngay. Không bán nội thất đã có sẵn trong prefab phòng.
 
 Đã kiểm tra 39 điều kiện về mua, thiếu coin, kho, đặt ngoài sàn, vị trí hợp lệ, xoay, hủy, nạp lại bố trí, thu về kho và save cũ bằng dữ liệu thử riêng; save người chơi không bị thay đổi. Giao diện được kiểm tra qua ảnh render Unity.
+# Thay đổi vị trí đồ trong phòng
+
+Bấm **Thay đổi vị trí** trên HUD, rồi chạm/bấm vào một đồ vật trong phòng. Đồ được chọn sẽ đổi màu để dễ nhận biết.
+
+- **Di chuyển**: giữ chuột trái để kéo đồ hoặc chạm/kéo trên điện thoại; thả tay giữ nguyên vị trí xem trước. Dùng **Xoay 90°** nếu cần, rồi bấm **Xác nhận** hoặc chuột phải để cố định vị trí hiện tại. Chỉ lưu vị trí hợp lệ bên trong phòng, không chồng lên vật khác.
+- **Hủy**: khôi phục vị trí và góc xoay trước khi di chuyển.
+- **Xóa khỏi phòng**: đồ mua trong shop được trả về kho; nội thất có sẵn được ẩn khỏi riêng phòng đó và không được cộng thành đồ sở hữu.
+- **Xong**: thoát chế độ chỉnh sửa. Escape hủy lần di chuyển đang thực hiện trước khi thoát chế độ này.
+
+Vị trí, góc xoay và trạng thái xóa được lưu theo từng phòng. Sàn, tường, cửa và các phần cấu trúc không được chọn để di chuyển. Pet tạm dừng di chuyển trong lúc chỉnh sửa.
+
+Kiểm tra trong Unity Play Mode: 30 trường hợp chọn đồ, loại trừ cấu trúc, di chuyển/xoay/hủy, vị trí không hợp lệ, tính toàn vẹn kho và tải lại dữ liệu đều đạt. Thanh công cụ được kiểm tra ở 320×568, 390×844, 844×390 và 640×360 với vùng an toàn mô phỏng.

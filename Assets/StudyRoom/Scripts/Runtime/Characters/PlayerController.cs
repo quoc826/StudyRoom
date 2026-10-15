@@ -228,9 +228,11 @@ public class PlayerController : MonoBehaviour
     public bool TrySitOn(Transform target)
     {
         Transform chair = target;
-        while (chair && chair.name.IndexOf("Chair", System.StringComparison.OrdinalIgnoreCase) < 0)
+        while (chair && !StudyRoomSeating.IsSeat(chair))
             chair = chair.parent;
         if (!chair || !animator || !animator.HasState(0, SitState)) return false;
+        // Large seats stay unavailable until a suitable sitting animation is chosen.
+        if (StudyRoomSeating.IsLargeSeat(chair)) return false;
         if (seated && currentChair == chair) return true;
 
         var renderers = chair.GetComponentsInChildren<Renderer>();
@@ -264,7 +266,9 @@ public class PlayerController : MonoBehaviour
         SetWalking(false);
         currentChair = chair;
         seated = true;
-        transform.SetPositionAndRotation(seat, Quaternion.Euler(0f, chair.eulerAngles.y + facingOffset + 180f, 0f));
+        Vector3 chairForward = GetChairForward(chair, bounds);
+        float chairYaw = Mathf.Atan2(chairForward.x, chairForward.z) * Mathf.Rad2Deg;
+        transform.SetPositionAndRotation(seat, Quaternion.Euler(0f, chairYaw + facingOffset, 0f));
         animator.Play(SitState, 0, 0f);
         animator.Update(0f);
         // Align the animated pelvis with the seat rather than assuming a model's root height.
@@ -274,6 +278,42 @@ public class PlayerController : MonoBehaviour
                 if (bone.name == "DEF-spine") { hips = bone; break; }
         if (hips) transform.position += seat + Vector3.up * (0.08f * transform.lossyScale.y) - hips.position;
         return true;
+    }
+
+    private static Vector3 GetChairForward(Transform chair, Bounds bounds)
+    {
+        // Room meshes can have their rotation baked into their vertices, so their
+        // Transform.forward does not necessarily point away from the backrest.
+        var colliders = chair.GetComponentsInChildren<Collider>();
+        Vector3 backrestCenter = Vector3.zero;
+        int samples = 0;
+        const int gridSize = 11;
+        float margin = Mathf.Max(0.01f, bounds.size.y * 0.02f);
+        float depth = bounds.size.y * 0.25f + margin;
+        for (int x = 0; x < gridSize; x++)
+        for (int z = 0; z < gridSize; z++)
+        {
+            Vector3 origin = new Vector3(
+                Mathf.Lerp(bounds.min.x, bounds.max.x, (x + 0.5f) / gridSize),
+                bounds.max.y + margin,
+                Mathf.Lerp(bounds.min.z, bounds.max.z, (z + 0.5f) / gridSize));
+            foreach (var collider in colliders)
+            {
+                if (!collider.enabled || collider.isTrigger) continue;
+                if (!collider.Raycast(new Ray(origin, Vector3.down), out RaycastHit hit, depth)) continue;
+                backrestCenter += hit.point;
+                samples++;
+                break;
+            }
+        }
+        if (samples > 0)
+        {
+            Vector3 back = Vector3.ProjectOnPlane(backrestCenter / samples - bounds.center, Vector3.up);
+            float threshold = Mathf.Max(bounds.size.x, bounds.size.z) * 0.12f;
+            if (back.sqrMagnitude > threshold * threshold) return -back.normalized;
+        }
+        // Stools without a backrest use their authored forward direction.
+        return Vector3.ProjectOnPlane(chair.forward, Vector3.up).normalized;
     }
 
     private bool IsWithinChairRange(Bounds bounds)
@@ -313,6 +353,8 @@ public class PlayerController : MonoBehaviour
         System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
         foreach (var hit in hits)
         {
+            var computer = FindAnyObjectByType<StudyRoomComputerUI>();
+            if (computer && computer.TryOpen(hit.transform)) return true;
             // Movement boundaries are invisible and must not block pointer interaction.
             if (hit.transform.IsChildOf(transform) || characterDistance <= hit.distance)
                 return PlayRandomInteraction();
@@ -339,6 +381,12 @@ public class PlayerController : MonoBehaviour
         interactionState = state;
         animator.Play(state, 0, 0f);
         return true;
+    }
+
+    public void ReleaseFurniture(Transform furniture)
+    {
+        if (currentChair && (currentChair == furniture || currentChair.IsChildOf(furniture))) StandUp();
+        if (pendingChair && (pendingChair == furniture || pendingChair.IsChildOf(furniture))) pendingChair = null;
     }
 
     private void StandUp()

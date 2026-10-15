@@ -8,6 +8,7 @@ public static class StudyRoomCharacterActionsBuilder
     [MenuItem("StudyRoom/Rebuild Character Idle And Celebration")]
     public static void Rebuild()
     {
+        RebuildCrossLeggedSit();
         StudyRoomSitAnimationBuilder.Bake("KA_Idle01_breathing", "IdleBreathing", true);
         StudyRoomSitAnimationBuilder.Bake("KA_Idle16_WaveHands", "AfkWave", false);
         StudyRoomSitAnimationBuilder.Bake("KA_Idle02_LookLeftAndRight", "AfkLook", false);
@@ -37,5 +38,16 @@ public static class StudyRoomCharacterActionsBuilder
             ?? machine.AddState(stateName);
         state.motion = AssetDatabase.LoadAssetAtPath<AnimationClip>(
             "Assets/StudyRoom/Animations/" + clipName + ".anim");
+    }
+
+    [MenuItem("StudyRoom/Rebuild Cross Legged Sit")]
+    public static void RebuildCrossLeggedSit()
+    {
+        StudyRoomSitAnimationBuilder.Bake("KA_Idle46_SitFloor_Loop", "SitCrossLeggedLoop", true);
+        var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(
+            "Assets/ThirdParty/Characters/Chibi_Girl/Animations/CuteGirlAnimator.controller");
+        SetMotion(controller, "SitCrossLegged", "SitCrossLeggedLoop");
+        EditorUtility.SetDirty(controller);
+        AssetDatabase.SaveAssets();
     }
 }

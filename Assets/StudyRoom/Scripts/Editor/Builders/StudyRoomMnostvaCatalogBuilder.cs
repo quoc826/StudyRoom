@@ -39,7 +39,7 @@ public static class StudyRoomMnostvaCatalogBuilder
                 {
                     id = "mnostva-" + prefab.name.ToLowerInvariant().Replace('_', '-'),
                     displayName = StudyRoomShopCatalog.CategoryName(category) + " · " + prefab.name.Replace('_', ' '),
-                    description = "Chọn vị trí trong phòng · Chuột phải hoặc bấm Đặt để xác nhận",
+                    description = "",
                     prefab = prefab,
                     price = Price(category)
                 };

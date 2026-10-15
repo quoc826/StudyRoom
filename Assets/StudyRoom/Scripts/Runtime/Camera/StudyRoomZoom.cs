@@ -39,7 +39,9 @@ public class StudyRoomZoom : MonoBehaviour
     {
         if (!roomCamera || defaultSize <= 0f) CaptureDefaultView();
         if (!roomCamera || !roomCamera.orthographic || defaultSize <= 0f) return;
-        bool modalOpen = (overlay && overlay.gameObject.activeInHierarchy) || (rewards && rewards.IsOpen) || (shop && shop.IsOpen);
+        var computer = GetComponent<StudyRoomComputerUI>();
+        var furniture = GetComponent<StudyRoomDecorations>();
+        bool modalOpen = (overlay && overlay.gameObject.activeInHierarchy) || (rewards && rewards.IsOpen) || (shop && shop.IsOpen) || (computer && computer.IsOpen) || (furniture && furniture.IsEditing);
         var touches = StudyRoomTouchInput.Read();
         if (touches.Count >= 2)
             UpdatePinch(touches, modalOpen);

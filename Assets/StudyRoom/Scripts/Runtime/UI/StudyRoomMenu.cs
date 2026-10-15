@@ -24,6 +24,8 @@ public class StudyRoomMenu : MonoBehaviour
         if (!GetComponent<StudyRoomZoom>()) gameObject.AddComponent<StudyRoomZoom>();
         if (!GetComponent<StudyRoomRewardsUI>()) gameObject.AddComponent<StudyRoomRewardsUI>();
         if (!GetComponent<StudyRoomShopUI>()) gameObject.AddComponent<StudyRoomShopUI>();
+        if (!GetComponent<StudyRoomComputerUI>()) gameObject.AddComponent<StudyRoomComputerUI>();
+        if (!GetComponent<StudyRoomFurnitureEditUI>()) gameObject.AddComponent<StudyRoomFurnitureEditUI>();
         canvas = transform.Find("Canvas");
         overlay = canvas.Find("Overlay").gameObject;
         menu = overlay.transform.Find("MenuPanel").gameObject;
@@ -72,6 +74,14 @@ public class StudyRoomMenu : MonoBehaviour
 #endif
         if (escape)
         {
+            var furniture = GetComponent<StudyRoomDecorations>();
+            if (furniture && furniture.IsEditing)
+            {
+                if (furniture.IsPlacing) furniture.CancelPlacement(); else furniture.EndEditing();
+                return;
+            }
+            var computer = GetComponent<StudyRoomComputerUI>();
+            if (computer && computer.IsOpen) { computer.Close(); return; }
             var shop = GetComponent<StudyRoomShopUI>();
             if (shop && shop.IsPlacing) { shop.CancelPlacement(); return; }
             if (shop && shop.IsOpen) { shop.Close(); return; }
@@ -86,6 +96,11 @@ public class StudyRoomMenu : MonoBehaviour
 
     public void OpenMenu()
     {
+        var furniture = GetComponent<StudyRoomDecorations>(); if (furniture && furniture.IsEditing) furniture.EndEditing();
+        var computer = GetComponent<StudyRoomComputerUI>();
+        if (computer && computer.IsOpen) computer.Close();
+        music.SetValueWithoutNotify(RoomAudioChannel.GetVolume(RoomAudioChannel.Channel.BackgroundMusic));
+        RefreshVolumeLabels();
         var shop = GetComponent<StudyRoomShopUI>();
         if (shop && shop.IsPlacing) shop.CancelPlacement();
         if (shop && shop.IsOpen) shop.Close();

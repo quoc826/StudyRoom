@@ -21,6 +21,15 @@ public class StudyRoomProgress
     }
 
     [Serializable]
+    public class FurnitureChange
+    {
+        public string hierarchyKey;
+        public Vector3 localPosition;
+        public Quaternion localRotation = Quaternion.identity;
+        public bool removed;
+    }
+
+    [Serializable]
     public class SavedRoom
     {
         public string id;
@@ -28,6 +37,7 @@ public class StudyRoomProgress
         public string roomId;
         public string characterId;
         public List<PlacedDecoration> decorations = new List<PlacedDecoration>();
+        public List<FurnitureChange> furnitureChanges = new List<FurnitureChange>();
     }
 
     [Serializable]
@@ -80,7 +90,10 @@ public class StudyRoomProgress
         data.version = 3;
         if (data.decorationStock == null) data.decorationStock = new List<DecorationStock>();
         foreach (var room in data.savedRooms)
+        {
             if (room.decorations == null) room.decorations = new List<PlacedDecoration>();
+            if (room.furnitureChanges == null) room.furnitureChanges = new List<FurnitureChange>();
+        }
         if (data.daily == null) data.daily = new DailyRewards();
         if (data.daily.claimed == null || data.daily.claimed.Length != StudyRoomDailyQuests.All.Count)
             Array.Resize(ref data.daily.claimed, StudyRoomDailyQuests.All.Count);
@@ -236,6 +249,30 @@ public class StudyRoomProgress
         if (placed == null || DecorationCount(placed.itemId) == int.MaxValue) return false;
         room.decorations.Remove(placed);
         Stock(placed.itemId).count++;
+        Save();
+        return true;
+    }
+
+    public bool MoveDecoration(string roomId, string instanceId, Vector3 position, float rotation)
+    {
+        var placed = data.savedRooms.Find(room => room.id == roomId)?.decorations.Find(item => item.instanceId == instanceId);
+        if (placed == null || !Finite(position.x) || !Finite(position.y) || !Finite(position.z) || !Finite(rotation)) return false;
+        placed.localPosition = position;
+        placed.rotation = rotation;
+        Save();
+        return true;
+    }
+
+    public bool ChangeBuiltInFurniture(string roomId, string key, Vector3 position, Quaternion rotation, bool removed)
+    {
+        var room = data.savedRooms.Find(saved => saved.id == roomId);
+        if (room == null || string.IsNullOrEmpty(key) || !Finite(position.x) || !Finite(position.y) || !Finite(position.z) ||
+            !Finite(rotation.x) || !Finite(rotation.y) || !Finite(rotation.z) || !Finite(rotation.w)) return false;
+        var change = room.furnitureChanges.Find(item => item.hierarchyKey == key);
+        if (change == null) { change = new FurnitureChange { hierarchyKey = key }; room.furnitureChanges.Add(change); }
+        change.localPosition = position;
+        change.localRotation = rotation;
+        change.removed = removed;
         Save();
         return true;
     }

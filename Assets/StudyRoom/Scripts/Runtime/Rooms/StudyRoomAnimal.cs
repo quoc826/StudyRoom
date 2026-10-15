@@ -49,7 +49,7 @@ public class StudyRoomAnimal : MonoBehaviour
     private void Tick(float elapsed)
     {
         if (!room || elapsed <= 0f) return;
-        if (room.IsPlacing)
+        if (room.IsPlacing || room.IsEditing)
         {
             SetMoving(false);
             waitTime = 0.5f;
@@ -65,7 +65,7 @@ public class StudyRoomAnimal : MonoBehaviour
         direction.y = 0f;
         float distance = direction.magnitude;
         if (distance < 0.03f) { Rest(); return; }
-        Vector3 next = transform.position + direction.normalized * Mathf.Min(distance, moveSpeed * elapsed);
+        Vector3 next = transform.position + direction.normalized * Mathf.Min(distance, moveSpeed * Mathf.Min(elapsed, 0.1f));
         if (!room.CanAnimalMove(this, transform.position, next)) { Rest(); return; }
         transform.rotation = Quaternion.RotateTowards(transform.rotation,
             Quaternion.LookRotation(direction), 150f * elapsed);
@@ -74,9 +74,9 @@ public class StudyRoomAnimal : MonoBehaviour
 
     private void ChooseDestination()
     {
-        for (int attempt = 0; attempt < 24; attempt++)
+        for (int attempt = 0; attempt < 48; attempt++)
         {
-            Vector2 offset = Random.insideUnitCircle * 1.2f;
+            Vector2 offset = Random.insideUnitCircle * (attempt < 24 ? 1.2f : 4f);
             if (offset.sqrMagnitude < 0.16f) continue;
             Vector3 candidate = transform.position + new Vector3(offset.x, 0f, offset.y);
             if (!room.CanAnimalOccupy(this, candidate)) continue;

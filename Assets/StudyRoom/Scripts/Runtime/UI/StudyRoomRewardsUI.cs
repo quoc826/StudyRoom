@@ -68,6 +68,9 @@ public class StudyRoomRewardsUI : MonoBehaviour
     public void Open()
     {
         if (!modal || IsOpen || GetComponent<StudyRoomStartScreen>()) return;
+        var furniture = GetComponent<StudyRoomDecorations>(); if (furniture && furniture.IsEditing) furniture.EndEditing();
+        var computer = GetComponent<StudyRoomComputerUI>();
+        if (computer && computer.IsOpen) computer.Close();
         var shop = GetComponent<StudyRoomShopUI>();
         if (shop && shop.IsPlacing) shop.CancelPlacement();
         if (shop && shop.IsOpen) shop.Close();

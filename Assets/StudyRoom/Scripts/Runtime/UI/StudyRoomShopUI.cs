@@ -67,7 +67,8 @@ public class StudyRoomShopUI : MonoBehaviour
     private void Update()
     {
         var rewards = GetComponent<StudyRoomRewardsUI>();
-        SetShortcutsVisible(!(rewards && rewards.IsOpen));
+        var computer = GetComponent<StudyRoomComputerUI>();
+        SetShortcutsVisible(!(rewards && rewards.IsOpen) && !(computer && computer.IsOpen));
         if (!IsPlacing || !placementBar) return;
         confirm.interactable = decorations.ValidPlacement;
         placementHint.text = decorations.ValidPlacement ? "Vị trí hợp lệ · Chuột phải hoặc bấm Đặt để xác nhận" : "Chọn chỗ trống trên sàn, bên trong phòng";
@@ -86,6 +87,9 @@ public class StudyRoomShopUI : MonoBehaviour
     public void Open()
     {
         if (!modal || IsOpen) return;
+        if (decorations && decorations.IsEditing) decorations.EndEditing();
+        var computer = GetComponent<StudyRoomComputerUI>();
+        if (computer && computer.IsOpen) computer.Close();
         if (IsPlacing) CancelPlacement();
         var rewards = GetComponent<StudyRoomRewardsUI>();
         if (rewards && rewards.IsOpen) rewards.Close();
