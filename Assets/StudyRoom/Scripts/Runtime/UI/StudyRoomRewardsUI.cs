@@ -10,7 +10,7 @@ public class StudyRoomRewardsUI : MonoBehaviour
 {
     private StudyRoomEconomy economy;
     private GameObject modal;
-    private Text wallet, countdown, studyStatus, notice, summary, date;
+    private Text wallet, countdown, studyStatus, notice, summary, date, studySummary;
     private Button openButton, closeButton, studyButton;
     private Text studyLabel;
     private readonly Text[] progressLabels = new Text[5];
@@ -107,8 +107,9 @@ public class StudyRoomRewardsUI : MonoBehaviour
         wallet.text = progress.Coins + " coin";
         countdown.text = "+5 coin sau " + Duration(progress.NextCoinSeconds);
         studyStatus.text = economy.IsStudying ? "Đang học · " + Duration(progress.DailyStudySeconds) : "15 phút trong game = +5 coin";
-        date.text = "NGÀY " + progress.QuestDate + " · LÀM MỚI LÚC 00:00";
-        summary.text = "Trong game: " + Duration(progress.DailyOnlineSeconds) + "    •    Đã học: " + Duration(progress.DailyStudySeconds);
+        date.text = "NGÀY " + progress.QuestDate;
+        summary.text = "Trong game: " + Duration(progress.DailyOnlineSeconds);
+        studySummary.text = "Đã học: " + Duration(progress.DailyStudySeconds);
         studyButton.interactable = economy.CanStudy;
         studyLabel.text = !economy.CanStudy ? "Vào phòng để bắt đầu học" : economy.IsStudying ? "Tạm dừng học" : "Bắt đầu học";
         for (int i = 0; i < StudyRoomDailyQuests.All.Count; i++)
@@ -121,7 +122,7 @@ public class StudyRoomRewardsUI : MonoBehaviour
                 Duration(amount) + " / " + Duration(quest.TargetSeconds);
             fills[i].fillAmount = (float)(amount / quest.TargetSeconds);
             claims[i].interactable = complete && !claimed;
-            claimLabels[i].text = claimed ? "Đã nhận" : complete ? "Nhận +" + quest.Coins : "+" + quest.Coins + " coin";
+            StudyRoomCoinIcon.SetRewardLabel(claims[i], quest.Coins, claimed);
         }
     }
 
@@ -160,7 +161,7 @@ public class StudyRoomRewardsUI : MonoBehaviour
             var hud = Rect(root, "WalletHUD", new Vector2(410, 100), new Vector2(28, 28));
             hud.anchorMin = hud.anchorMax = hud.pivot = Vector2.zero;
             Panel(hud, Cream);
-            Label(hud, "Coins", "0 coin", 25, new Vector2(176, 38), new Vector2(18, 28));
+            Label(hud, "Coins", "0 coin", 25, new Vector2(138, 38), new Vector2(56, 28));
             Label(hud, "Countdown", "+5 coin sau 15:00", 15, new Vector2(245, 27), new Vector2(18, 1));
             Label(hud, "StudyStatus", "15 phút trong game = +5 coin", 13, new Vector2(375, 24), new Vector2(18, -26));
             MakeButton(hud, "Quests", "Nhiệm vụ", new Vector2(140, 42), new Vector2(254, 28), Pink);
@@ -183,7 +184,7 @@ public class StudyRoomRewardsUI : MonoBehaviour
             var close = MakeButton(card, "Close", "Đóng", new Vector2(76, 40), Vector2.zero, Pale);
             var closeRect = close.GetComponent<RectTransform>(); closeRect.anchorMin = closeRect.anchorMax = closeRect.pivot = Vector2.one;
             closeRect.anchoredPosition = new Vector2(-18, -18);
-            var totals = Label(card, "Summary", "Trong game: 00:00    •    Đã học: 00:00", 16, new Vector2(650, 30), Vector2.zero);
+            var totals = Label(card, "Summary", "Trong game: 00:00", 16, new Vector2(650, 30), Vector2.zero);
             TopLeft(totals.rectTransform, new Vector2(24, -94));
             var study = MakeButton(card, "Study", "Bắt đầu học", new Vector2(246, 42), Vector2.zero, Pink);
             TopLeft(study.GetComponent<RectTransform>(), new Vector2(24, -130));
@@ -207,7 +208,7 @@ public class StudyRoomRewardsUI : MonoBehaviour
             content.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             scroll.content = content;
             for (int i = 0; i < StudyRoomDailyQuests.All.Count; i++) CreateQuestRow(content, i);
-            var footer = Label(card, "Footer", "Tích lũy trong ngày · Mỗi nhiệm vụ nhận thưởng 1 lần · Coin tự lưu", 13, new Vector2(790, 32), Vector2.zero);
+            var footer = Label(card, "Footer", "Tích lũy trong ngày · Mỗi nhiệm vụ nhận thưởng 1 lần · Kim cương tự lưu", 13, new Vector2(790, 32), Vector2.zero);
             footer.rectTransform.anchorMin = footer.rectTransform.anchorMax = footer.rectTransform.pivot = new Vector2(0, 0);
             footer.rectTransform.anchoredPosition = new Vector2(24, 12);
             footer.rectTransform.anchorMax = new Vector2(1, 0);
@@ -236,7 +237,8 @@ public class StudyRoomRewardsUI : MonoBehaviour
         var fill = Rect(track, "Fill", Vector2.zero, Vector2.zero); Stretch(fill);
         var image = Panel(fill, new Color32(176, 135, 189, 255));
         image.type = Image.Type.Filled; image.fillMethod = Image.FillMethod.Horizontal; image.fillAmount = 0;
-        var claim = MakeButton(row, "Claim", "+" + quest.Coins + " coin", new Vector2(130, 44), Vector2.zero, Pink);
+        var claim = MakeButton(row, "Claim", "+" + quest.Coins, new Vector2(130, 44), Vector2.zero, Pink);
+        StudyRoomCoinIcon.SetRewardLabel(claim, quest.Coins);
         claim.interactable = false;
         var rect = claim.GetComponent<RectTransform>(); rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1, 0.5f);
         rect.anchoredPosition = new Vector2(-16, 0);
@@ -251,6 +253,7 @@ public class StudyRoomRewardsUI : MonoBehaviour
         noticeRect.anchorMin = noticeRect.anchorMax = noticeRect.pivot = new Vector2(0, 1);
         noticeRect.anchoredPosition = new Vector2(28, -268);
         wallet = root.Find("WalletHUD/Coins").GetComponent<Text>();
+        StudyRoomCoinIcon.Attach(wallet);
         countdown = root.Find("WalletHUD/Countdown").GetComponent<Text>();
         studyStatus = root.Find("WalletHUD/StudyStatus").GetComponent<Text>();
         notice = root.Find("RewardNotice").GetComponent<Text>();
@@ -268,12 +271,25 @@ public class StudyRoomRewardsUI : MonoBehaviour
         studyLabel = studyButton.transform.Find("Label").GetComponent<Text>();
         summary = card.Find("Summary").GetComponent<Text>();
         date = card.Find("Date").GetComponent<Text>();
+        var existingStudySummary = card.Find("StudySummary");
+        studySummary = existingStudySummary ? existingStudySummary.GetComponent<Text>() :
+            Label(card, "StudySummary", "Đã học: 00:00", 16, new Vector2(240, 30), Vector2.zero);
+        summary.rectTransform.anchorMin = new Vector2(0, 1);
+        summary.rectTransform.anchorMax = new Vector2(.5f, 1);
+        summary.rectTransform.offsetMin = new Vector2(24, -124);
+        summary.rectTransform.offsetMax = new Vector2(0, -94);
+        studySummary.rectTransform.anchorMin = new Vector2(.5f, 1);
+        studySummary.rectTransform.anchorMax = Vector2.one;
+        studySummary.rectTransform.offsetMin = new Vector2(0, -124);
+        studySummary.rectTransform.offsetMax = new Vector2(-24, -94);
+        studySummary.alignment = TextAnchor.MiddleRight;
         for (int i = 0; i < claims.Length; i++)
         {
             var row = card.Find("QuestList/Content/Quest" + i);
             progressLabels[i] = row.Find("Progress").GetComponent<Text>();
             fills[i] = row.Find("Track/Fill").GetComponent<Image>();
             claims[i] = row.Find("Claim").GetComponent<Button>();
+            StudyRoomCoinIcon.SetRewardLabel(claims[i], StudyRoomDailyQuests.All[i].Coins);
             claimLabels[i] = row.Find("Claim/Label").GetComponent<Text>();
         }
     }

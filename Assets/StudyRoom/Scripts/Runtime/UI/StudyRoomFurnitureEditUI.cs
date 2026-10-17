@@ -59,6 +59,22 @@ public class StudyRoomFurnitureEditUI : MonoBehaviour
     {
         if (toolbar) return;
         var canvas = transform.Find("Canvas"); if (!canvas) return;
+        var existing = canvas.Find("FurnitureEditUI");
+        if (existing)
+        {
+            shortcut = existing.Find("EditButton").gameObject;
+            toolbar = existing.Find("Toolbar").gameObject;
+            title = toolbar.transform.Find("Title").GetComponent<Text>();
+            hint = toolbar.transform.Find("Hint").GetComponent<Text>();
+            shortcut.GetComponent<Button>().onClick.AddListener(Open);
+            move = BindAction("Move", () => decorations.MoveSelectedFurniture());
+            remove = BindAction("Delete", () => decorations.DeleteSelectedFurniture());
+            done = BindAction("Done", () => decorations.EndEditing());
+            rotate = BindAction("Rotate", () => decorations.RotatePreview());
+            confirm = BindAction("Confirm", () => decorations.ConfirmPlacement());
+            cancel = BindAction("Cancel", () => decorations.CancelPlacement());
+            return;
+        }
         var reference = canvas.GetComponentInChildren<Text>(true);
         font = reference && reference.font ? reference.font : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         var style = canvas.Find("MenuButton");
@@ -87,6 +103,13 @@ public class StudyRoomFurnitureEditUI : MonoBehaviour
         confirm = Action(bar, "Confirm", "Xác nhận", 1, () => decorations.ConfirmPlacement(), pink);
         cancel = Action(bar, "Cancel", "Hủy", 2, () => decorations.CancelPlacement(), pale);
         toolbar.SetActive(false);
+    }
+
+    private Button BindAction(string name, UnityEngine.Events.UnityAction action)
+    {
+        var button = toolbar.transform.Find(name).GetComponent<Button>();
+        button.onClick.AddListener(action);
+        return button;
     }
 
     private Button Action(Transform parent, string name, string caption, int column, UnityEngine.Events.UnityAction action, Color color)

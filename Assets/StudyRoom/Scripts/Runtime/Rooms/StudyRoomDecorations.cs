@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 
-/// <summary>Places inventory items on the room floor and restores each room's saved layout.</summary>
+/// <summary>Places inventory items on floors or tables and restores each room's saved layout.</summary>
 public class StudyRoomDecorations : MonoBehaviour
 {
     private StudyRoomRoomLoader loader;
@@ -31,6 +31,8 @@ public class StudyRoomDecorations : MonoBehaviour
     private bool editGestureBlocked;
     private float movingFloorOffset;
     private bool placementUsesTouch;
+    private GameObject placementTable;
+    private float placementSurfaceY;
     public bool IsEditing { get; private set; }
     public GameObject SelectedFurniture => selected;
     public string SelectedFurnitureName => selected
@@ -184,6 +186,16 @@ public class StudyRoomDecorations : MonoBehaviour
         if (confirm) { ConfirmPlacement(); return; }
         var plane = new Plane(Vector3.up, new Vector3(0, floorY, 0));
         var ray = Camera.main.ScreenPointToRay(position);
+        Physics.SyncTransforms();
+        var hits = Physics.RaycastAll(ray, Mathf.Infinity, ~0, QueryTriggerInteraction.Ignore);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (var hit in hits)
+        {
+            var table = TableFor(hit.transform);
+            if (!table || hit.normal.y < .9f) continue;
+            PositionOnSurface(hit.point, hit.point.y, table);
+            return;
+        }
         if (plane.Raycast(ray, out float distance))
         {
             SetWorldPosition(ray.GetPoint(distance));
@@ -192,13 +204,56 @@ public class StudyRoomDecorations : MonoBehaviour
 
     public void SetWorldPosition(Vector3 position)
     {
+        PositionOnSurface(position, floorY, null);
+    }
+
+    private void PositionOnSurface(Vector3 position, float surfaceY, GameObject table)
+    {
         if (!preview) return;
-        preview.transform.position = new Vector3(position.x, floorY + 0.01f, position.z);
+        placementTable = table;
+        placementSurfaceY = surfaceY;
+        preview.transform.position = new Vector3(position.x, surfaceY + 0.01f, position.z);
         var bounds = BoundsOf(preview);
         if (movingOriginal)
             preview.transform.position += new Vector3(position.x - bounds.center.x, 0, position.z - bounds.center.z);
-        preview.transform.position += Vector3.up * (floorY + 0.01f + (movingOriginal ? movingFloorOffset : 0) - bounds.min.y);
+        preview.transform.position += Vector3.up * (surfaceY + 0.01f + (movingOriginal && !table ? movingFloorOffset : 0) - bounds.min.y);
         ValidatePreview();
+    }
+
+    private GameObject TableFor(Transform target)
+    {
+        for (var current = target; current && current != room; current = current.parent)
+        {
+            if (current.gameObject == movingOriginal || current.IsChildOf(preview.transform)) return null;
+            if (!builtInFurniture.ContainsKey(current.gameObject) && InstanceId(current.gameObject) == null) continue;
+            if (System.Text.RegularExpressions.Regex.IsMatch(current.name.ToLowerInvariant(),
+                @"(^|[_\s\d])(table|desk)s?([_\s\d]|$)")) return current.gameObject;
+            string id = InstanceId(current.gameObject);
+            var saved = FindRoom();
+            var placement = saved?.decorations.Find(entry => entry.instanceId == id);
+            var item = placement == null ? null : loader.shopCatalog.Find(placement.itemId);
+            if (item != null && item.category == StudyRoomShopCatalog.Category.Tables) return current.gameObject;
+        }
+        return null;
+    }
+
+    private bool FitsTable(Bounds bounds)
+    {
+        // Sample the whole footprint so an overhanging object cannot be confirmed.
+        for (int x = -1; x <= 1; x++)
+            for (int z = -1; z <= 1; z++)
+            {
+                var origin = new Vector3(bounds.center.x + bounds.extents.x * x,
+                    placementSurfaceY + .05f, bounds.center.z + bounds.extents.z * z);
+                bool supported = false;
+                foreach (var collider in placementTable.GetComponentsInChildren<Collider>())
+                    if (collider.enabled && !collider.isTrigger && collider.gameObject.activeInHierarchy &&
+                        collider.Raycast(new Ray(origin, Vector3.down), out var hit, .1f) && hit.normal.y >= .9f &&
+                        Mathf.Abs(hit.point.y - placementSurfaceY) <= .02f)
+                    { supported = true; break; }
+                if (!supported) return false;
+            }
+        return true;
     }
 
     public void RotatePreview()
@@ -218,6 +273,7 @@ public class StudyRoomDecorations : MonoBehaviour
             ContainsFloorPoint(new Vector3(bounds.min.x, floorY, bounds.max.z)) &&
             ContainsFloorPoint(new Vector3(bounds.max.x, floorY, bounds.min.z)) &&
             ContainsFloorPoint(new Vector3(bounds.max.x, floorY, bounds.max.z));
+        if (placementTable) ValidPlacement &= !animal && FitsTable(bounds);
         // Thin carpets can sit under furniture; solid furniture must not overlap.
         if (ValidPlacement && bounds.size.y > 0.1f)
         {
@@ -504,8 +560,10 @@ public class StudyRoomDecorations : MonoBehaviour
         if (player) player.ReleaseFurniture(selected.transform);
         ClearSelectionHighlight();
         movingOriginal = selected;
+        placementTable = null;
         placementUsesTouch = false;
-        movingFloorOffset = Mathf.Max(0, BoundsOf(selected).min.y - floorY - .01f);
+        movingFloorOffset = InstanceId(selected) == null
+            ? Mathf.Max(0, BoundsOf(selected).min.y - floorY - .01f) : 0;
         preview = Instantiate(selected, selected.transform.parent);
         preview.name = "Furniture Move Preview";
         foreach (var collider in preview.GetComponentsInChildren<Collider>()) collider.enabled = false;

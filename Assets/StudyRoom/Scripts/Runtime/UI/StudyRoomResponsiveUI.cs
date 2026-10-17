@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 /// <summary>Phone layouts in logical canvas units, with device safe-area insets.</summary>
 [DisallowMultipleComponent]
+[ExecuteAlways]
 [RequireComponent(typeof(Canvas), typeof(CanvasScaler))]
 public class StudyRoomResponsiveUI : MonoBehaviour
 {
@@ -38,7 +39,7 @@ public class StudyRoomResponsiveUI : MonoBehaviour
     private void LateUpdate()
     {
         bool changed = width != Screen.width || height != Screen.height || safeArea != Screen.safeArea;
-        if (!changed && Time.unscaledTime < nextLayout) return;
+        if (Application.isPlaying && !changed && Time.unscaledTime < nextLayout) return;
         // Also pick up shop rows, dialogs and dropdowns created after the canvas.
         nextLayout = Time.unscaledTime + .15f;
         ApplyViewport(Screen.width, Screen.height, Screen.safeArea);
@@ -134,7 +135,7 @@ public class StudyRoomResponsiveUI : MonoBehaviour
             Top(rewards, "WalletHUD", 28 * hudScale, 28 * hudScale, 410, 100);
             var hud = rewards.Find("WalletHUD");
             if (hud) hud.localScale = Vector3.one * hudScale;
-            Top(hud, "Coins", 18, 3, 176, 38);
+            Top(hud, "Coins", 56, 3, 138, 38);
             Top(hud, "Countdown", 18, 36, 245, 27);
             Top(hud, "StudyStatus", 18, 64, 375, 24);
             Top(hud, "Quests", 16, 1, 140, 42, true);
@@ -156,12 +157,12 @@ public class StudyRoomResponsiveUI : MonoBehaviour
         Stretch(card, 12, 12, 12, 12);
         Header(card, "Title", 16, 104, 16, 42, 26);
         Top(card, "Close", 16, 12, 88, 64, true);
-        Header(card, "Wallet", 16, 112, 60, 30, 22);
+        Header(card, "Wallet", 54, 112, 60, 30, 22);
         Header(card, "Message", 16, 16, 96, 42, 18);
         if (!portrait)
         {
             Header(card, "Title", 16, 324, 12, 42, 26);
-            Top(card, "Wallet", 116, 12, 188, 48, true);
+            Top(card, "Wallet", 116, 12, 150, 48, true);
             Header(card, "Message", 16, 116, 64, 36, 18);
         }
         string[] tabs = { "ShopTab", "InventoryTab", "RoomTab" };
@@ -360,7 +361,7 @@ public class StudyRoomResponsiveUI : MonoBehaviour
         }
         var picker = root.Find("Picker"); if (!picker) return;
         Top(picker, "Back", 12, 12, 152, 64);
-        Top(picker, "Coins", 12, 12, 152, 64, true);
+        Top(picker, "Coins", 12, 12, 114, 64, true);
         Header(picker, "Heading", 16, 16, 84, 52, 30);
         Header(picker, "Step", 16, 16, 142, 46, 19);
         if (!portrait)
@@ -388,6 +389,18 @@ public class StudyRoomResponsiveUI : MonoBehaviour
 
     private void LayoutComputer(bool portrait, Vector2 available)
     {
+        var desktop = transform.Find("ComputerDesktop");
+        if (!desktop) return;
+        var laptopSlot = desktop.Find("LaptopSlot");
+        var modernCard = laptopSlot ? laptopSlot.Find("LaptopFrame/Screen/DesktopCard") : desktop.Find("DesktopCard");
+        if (modernCard && modernCard.Find("MusicWindow/Player"))
+        {
+            // Enlarge uniformly while preserving the laptop artwork's proportions.
+            if (laptopSlot) Fraction(desktop, "LaptopSlot", .01f, .01f, .99f, .99f);
+            else Fraction(desktop, "DesktopCard", .02f, .025f, .98f, .975f);
+            Fraction(modernCard, "MusicWindow", .02f, .115f, .98f, .88f);
+            return;
+        }
         var card = transform.Find("ComputerDesktop/DesktopCard"); if (!card) return;
         Stretch(card, 12, 12, 12, 12);
         Header(card, "Brand", 16, portrait ? 16 : 216, 12, 44, 22);

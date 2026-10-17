@@ -97,7 +97,7 @@ public class StudyRoomShopUI : MonoBehaviour
         restorePlayer = player && player.enabled;
         if (player) player.enabled = false;
         modal.SetActive(true);
-        message.text = "Mua bằng coin · Đồ đã mua có thể đặt vào phòng";
+        message.text = "Đồ đã mua có thể đặt vào phòng";
         ShowShop();
     }
 
@@ -147,7 +147,7 @@ public class StudyRoomShopUI : MonoBehaviour
     {
         var item = catalog.Find(id);
         if (economy.Progress.TryBuyDecoration(catalog, id)) message.text = "Đã mua " + item.displayName + " · Chọn Đặt để trang trí";
-        else message.text = "Chưa đủ coin để mua vật phẩm này.";
+        else message.text = "Chưa đủ kim cương để mua vật phẩm này.";
         Refresh();
     }
 
@@ -174,7 +174,7 @@ public class StudyRoomShopUI : MonoBehaviour
     private void Refresh()
     {
         if (!economy || !wallet) return;
-        wallet.text = economy.Progress.Coins + " coin";
+        wallet.text = economy.Progress.Coins.ToString();
         shopTab.GetComponent<Image>().color = showingRoom || showingInventory ? Pale : Pink;
         inventoryTab.GetComponent<Image>().color = showingInventory ? Pink : Pale;
         roomTab.GetComponent<Image>().color = showingRoom ? Pink : Pale;
@@ -185,7 +185,7 @@ public class StudyRoomShopUI : MonoBehaviour
                 var room = GetComponent<StudyRoomRoomLoader>().catalog.FindRoom(entry.Key);
                 bool owned = economy.Progress.RoomUnlocked(entry.Key);
                 entry.Value.interactable = !owned && economy.Progress.Coins >= room.price;
-                entry.Value.GetComponentInChildren<Text>().text = owned ? "Đã sở hữu" : "Mua · " + room.price;
+                StudyRoomCoinIcon.SetPurchaseLabel(entry.Value, room.price, owned);
             }
             return;
         }
@@ -248,11 +248,11 @@ public class StudyRoomShopUI : MonoBehaviour
             card.anchorMin = new Vector2(0.08f, 0.06f); card.anchorMax = new Vector2(0.92f, 0.94f);
             card.offsetMin = card.offsetMax = Vector2.zero; Panel(card, Cream);
             Label(card, "Title", "Shop · Trang trí phòng", 28, new Vector2(470, 46), new Vector2(24, -18));
-            Label(card, "Wallet", "0 coin", 19, new Vector2(220, 32), new Vector2(24, -65));
+            Label(card, "Wallet", "0", 19, new Vector2(182, 32), new Vector2(62, -65));
             var shut = Button(card, "Close", "Đóng", new Vector2(76, 40), Pale);
             var shutRect = shut.GetComponent<RectTransform>(); shutRect.anchorMin = shutRect.anchorMax = shutRect.pivot = Vector2.one;
             shutRect.anchoredPosition = new Vector2(-18, -18);
-            var hint = Label(card, "Message", "Mua bằng coin · Đồ đã mua có thể đặt vào phòng", 14, Vector2.zero, Vector2.zero);
+            var hint = Label(card, "Message", "Đồ đã mua có thể đặt vào phòng", 14, Vector2.zero, Vector2.zero);
             hint.rectTransform.anchorMin = new Vector2(0, 1); hint.rectTransform.anchorMax = Vector2.one;
             hint.rectTransform.offsetMin = new Vector2(24, -131); hint.rectTransform.offsetMax = new Vector2(-24, -97);
             var shop = Button(card, "ShopTab", "Cửa hàng", new Vector2(156, 40), Pink); TopLeft(shop.GetComponent<RectTransform>(), new Vector2(24, -138));
@@ -302,6 +302,7 @@ public class StudyRoomShopUI : MonoBehaviour
         inventoryTab = panel.Find("InventoryTab").GetComponent<Button>();
         title = panel.Find("Title").GetComponent<Text>();
         wallet = panel.Find("Wallet").GetComponent<Text>(); message = panel.Find("Message").GetComponent<Text>();
+        StudyRoomCoinIcon.Attach(wallet);
         content = panel.Find("ItemList/Content").GetComponent<RectTransform>(); scroll = panel.Find("ItemList").GetComponent<ScrollRect>();
         confirm = placementBar.transform.Find("Confirm").GetComponent<Button>(); rotate = placementBar.transform.Find("Rotate").GetComponent<Button>(); cancel = placementBar.transform.Find("Cancel").GetComponent<Button>();
         placementHint = placementBar.transform.Find("Hint").GetComponent<Text>();
@@ -330,6 +331,7 @@ public class StudyRoomShopUI : MonoBehaviour
             var row = ItemCard(item.id, item.displayName, item.description, item.thumbnail);
             var stock = Label(row, "Stock", "Trong kho: 0", 13, new Vector2(250, 24), new Vector2(122, -91));
             var buy = Button(row, "Buy", "Mua · " + item.price, new Vector2(142, 40), Pink);
+            StudyRoomCoinIcon.SetPurchaseLabel(buy, item.price);
             Right(buy.GetComponent<RectTransform>(), -12, -14);
             var place = Button(row, "Place", "Đặt vào phòng", new Vector2(142, 40), Pale);
             Right(place.GetComponent<RectTransform>(), -12, -65);
@@ -457,13 +459,14 @@ public class StudyRoomShopUI : MonoBehaviour
         {
             var row = ItemCard(room.id, room.displayName, "Phòng trống · Tự trang trí bằng đồ trong kho", room.thumbnail);
             var buy = Button(row, "BuyRoom", "Mua · " + room.price, new Vector2(142, 40), Pink);
+            StudyRoomCoinIcon.SetPurchaseLabel(buy, room.price);
             Right(buy.GetComponent<RectTransform>(), -12, -38);
             string id = room.id;
             buy.onClick.AddListener(() =>
             {
                 message.text = economy.Progress.TryUnlockRoom(id)
                     ? "Đã mua phòng · Về Home, chọn Tạo phòng mới để đặt tên và sử dụng"
-                    : "Chưa đủ coin để mua phòng này.";
+                    : "Chưa đủ kim cương để mua phòng này.";
                 Refresh();
             });
             roomViews[id] = buy;

@@ -228,7 +228,12 @@ public class StudyRoomStartScreen : MonoBehaviour
         scroll.verticalNormalizedPosition = 1;
     }
 
-    private void RefreshWallet() { if (wallet && Progress != null) wallet.text = Progress.Coins + " coin"; }
+    private void RefreshWallet()
+    {
+        if (!wallet || Progress == null) return;
+        StudyRoomCoinIcon.Attach(wallet);
+        wallet.text = Progress.Coins + " coin";
+    }
 
     private void Back()
     {

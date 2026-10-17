@@ -2809,7 +2809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   inputCamera: {fileID: 0}
   animator: {fileID: 5258071239787899842}
-  moveSpeed: 2.5
+  moveSpeed: 1.35
   rotationSmoothTime: 0.12
   stoppingDistance: 0.02
   chairInteractionDistance: 0.3

@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Camera inputCamera;
     [SerializeField] private Animator animator;
-    [SerializeField, Min(0f)] private float moveSpeed = 2.5f;
+    [SerializeField, Min(0f)] private float moveSpeed = 1.35f;
     [SerializeField, Min(0.01f)] private float rotationSmoothTime = 0.12f;
     [SerializeField, Min(0.001f)] private float stoppingDistance = 0.02f;
     [SerializeField, Min(0.05f)] private float chairInteractionDistance = 0.3f;
@@ -133,15 +133,18 @@ public class PlayerController : MonoBehaviour
                     ref turnVelocity, rotationSmoothTime, Mathf.Infinity, Time.deltaTime);
                 transform.rotation = Quaternion.Euler(0f, angle, 0f);
                 Vector3 before = transform.position;
-                Vector3 step = direction.normalized * Mathf.Min(direction.magnitude, moveSpeed * Time.deltaTime);
+                // Turn towards the path before taking full strides, rather than sliding sideways.
+                float headingError = Mathf.DeltaAngle(angle, targetAngle);
+                float alignment = Mathf.Clamp01(Mathf.Cos(headingError * Mathf.Deg2Rad));
+                Vector3 step = direction.normalized * Mathf.Min(direction.magnitude, moveSpeed * alignment * Time.deltaTime);
                 characterController.Move(step);
                 Vector3 actualStep = transform.position - before;
                 actualStep.y = 0f;
                 Vector3 remaining = destination - transform.position;
                 remaining.y = 0f;
                 hasDestination = remaining.sqrMagnitude > stoppingDistance * stoppingDistance;
-                moving = actualStep.sqrMagnitude > 0.000001f && hasDestination;
-                if (actualStep.sqrMagnitude < step.sqrMagnitude * 0.01f)
+                moving = actualStep.sqrMagnitude > 0.000001f;
+                if (step.sqrMagnitude > 0.000001f && actualStep.sqrMagnitude < step.sqrMagnitude * 0.01f)
                     hasDestination = false;
             }
         }

@@ -29,6 +29,9 @@ public static class StudyRoomSceneBuilder
         if (!shop) shop = Undo.AddComponent<StudyRoomShopUI>(roomUI);
         shop.catalog = loader.shopCatalog;
         shop.BuildInterface();
+        var furnitureEdit = roomUI.GetComponent<StudyRoomFurnitureEditUI>();
+        if (!furnitureEdit) furnitureEdit = Undo.AddComponent<StudyRoomFurnitureEditUI>(roomUI);
+        furnitureEdit.BuildInterface();
         EditorUtility.SetDirty(loader);
         EditorSceneManager.MarkSceneDirty(roomScene);
         if (!EditorSceneManager.SaveScene(roomScene)) throw new InvalidOperationException("Room scene save failed.");
