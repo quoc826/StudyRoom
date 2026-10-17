@@ -40,13 +40,15 @@ public class StudyRoomMenu : MonoBehaviour
             StudyRoomSession.ReturnHome();
         });
         Bind(menu.transform.Find("Close"), CloseMenu);
-        Bind(settings.transform.Find("Back"), () => { PlayerPrefs.Save(); ShowPanel(menu); });
+        var settingsContent = settings.transform.Find("SettingsViewport/Content");
+        if (!settingsContent) settingsContent = settings.transform;
+        Bind(settingsContent.Find("Back"), () => { PlayerPrefs.Save(); ShowPanel(menu); });
         Bind(home.transform.Find("EnterRoom"), CloseMenu);
         Bind(home.transform.Find("Settings"), () => ShowPanel(settings));
-        sfx = settings.transform.Find("SfxSlider").GetComponent<Slider>();
-        music = settings.transform.Find("MusicSlider").GetComponent<Slider>();
-        sfxValue = settings.transform.Find("SfxValue").GetComponent<Text>();
-        musicValue = settings.transform.Find("MusicValue").GetComponent<Text>();
+        sfx = settingsContent.Find("SfxSlider").GetComponent<Slider>();
+        music = settingsContent.Find("MusicSlider").GetComponent<Slider>();
+        sfxValue = settingsContent.Find("SfxValue").GetComponent<Text>();
+        musicValue = settingsContent.Find("MusicValue").GetComponent<Text>();
         sfx.SetValueWithoutNotify(RoomAudioChannel.GetVolume(RoomAudioChannel.Channel.Sfx));
         music.SetValueWithoutNotify(RoomAudioChannel.GetVolume(RoomAudioChannel.Channel.BackgroundMusic));
         RefreshVolumeLabels();
@@ -56,7 +58,7 @@ public class StudyRoomMenu : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             int index = i;
-            qualityButtons[i] = settings.transform.Find("Quality" + i).GetComponent<Button>();
+            qualityButtons[i] = settingsContent.Find("Quality" + i).GetComponent<Button>();
             qualityButtons[i].onClick.AddListener(() => ApplyQuality(index));
         }
         ApplyQuality(Mathf.Clamp(PlayerPrefs.GetInt("StudyRoom.Quality", 2), 0, 2));

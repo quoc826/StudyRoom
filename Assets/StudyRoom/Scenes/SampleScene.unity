@@ -9223,7 +9223,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67d9d78bf9b52d744a067aef74b7b16e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudyRoomComputerUI
-  tracks: []
+  tracks:
+  - {fileID: 8300000, guid: d66d2f0824c99ba4ba79145e8b1f632d, type: 3}
+  - {fileID: 8300000, guid: 33a706cc5d9fbe849b677943a3a202ed, type: 3}
+  - {fileID: 8300000, guid: 17f00b4f4c61f33479ca9f5072532383, type: 3}
+  - {fileID: 8300000, guid: 0e21f0a507543ba479abca63474ba058, type: 3}
+  - {fileID: 8300000, guid: 936099ef31d768e4aad1059cae59630a, type: 3}
+  - {fileID: 8300000, guid: 213e64ab02cea5e4d89bc7c8d9819f39, type: 3}
+  - {fileID: 8300000, guid: e738779eb898fa141b9a8059f8a91546, type: 3}
+  - {fileID: 8300000, guid: c64b4ba031d399b4b9f7992f8f03c064, type: 3}
+  - {fileID: 8300000, guid: c9b6f5a2967e3f94aa1c73b6fdc91946, type: 3}
+  - {fileID: 8300000, guid: 592bd0fdcb7a4784ba0a18711f22d650, type: 3}
+  - {fileID: 8300000, guid: 59d0863ced0f29f4c851a1fb90594079, type: 3}
+  - {fileID: 8300000, guid: 0c5a46b04473db542a089b362194bc84, type: 3}
+  - {fileID: 8300000, guid: 596819babcd8c0141ab8afd5cee4a561, type: 3}
+  - {fileID: 8300000, guid: aaa2e7f0ffd2b704ba0e537d89b2442f, type: 3}
+  - {fileID: 8300000, guid: 89ce5294586f80c44b540c1f759f2929, type: 3}
+  - {fileID: 8300000, guid: 30af924050aa5ac46afc27224b86533d, type: 3}
+  - {fileID: 8300000, guid: 7616dba2eaac44b4aa6ebe646261f6b8, type: 3}
+  - {fileID: 8300000, guid: cc33593116a1aa748ac68ed247098468, type: 3}
+  - {fileID: 8300000, guid: 847c86f28eb7544459fc5e6d116d0d16, type: 3}
+  - {fileID: 8300000, guid: 429b630e961bef24ea9d2c4b91b77998, type: 3}
   laptopTexture: {fileID: 2800000, guid: 8749a9420276a424fb8361824ca82550, type: 3}
   appearanceDuration: 0.35
 --- !u!1 &723409384

@@ -19,7 +19,7 @@ public class StudyRoomComputerUI : MonoBehaviour
     private bool restorePlayer, paused;
     private int trackIndex;
     private Font font;
-    private Text trackTitle, clock, timer;
+    private Text trackTitle, clock;
     private GameObject playIcon, pauseIcon;
     private Slider progress, volume;
     private AudioClip[] generatedTracks;
@@ -33,6 +33,16 @@ public class StudyRoomComputerUI : MonoBehaviour
     private readonly Color lavender = new Color32(232, 220, 248, 255);
     public bool IsOpen => desktop && desktop.activeSelf;
     public bool IsPlaying => source && source.isPlaying;
+
+    private void Start()
+    {
+        EnsureAudio();
+        var available = new List<int>();
+        for (int i = 0; i < tracks.Length; i++)
+            if (tracks[i]) available.Add(i);
+        if (available.Count > 0)
+            SelectTrack(available[UnityEngine.Random.Range(0, available.Count)], true);
+    }
 
     public static bool IsComputer(Transform target)
     {
@@ -191,9 +201,8 @@ public class StudyRoomComputerUI : MonoBehaviour
             rowRect.offsetMin = new Vector2(0, -playlistRows.Count * 52 - 46);
             rowRect.offsetMax = new Vector2(0, -playlistRows.Count * 52);
             Artwork(row.transform, "Note", "Music", new Vector2(.04f, .23f), new Vector2(.13f, .77f));
-            var title = Label(row.transform, "Title", tracks[i].name, new Vector2(.18f, .15f), new Vector2(.77f, .85f), 16, ink);
+            var title = Label(row.transform, "Title", tracks[i].name, new Vector2(.18f, .15f), new Vector2(.96f, .85f), 16, ink);
             title.horizontalOverflow = HorizontalWrapMode.Wrap;
-            Label(row.transform, "Duration", Duration(tracks[i].length), new Vector2(.79f, .15f), new Vector2(.96f, .85f), 12, ink).alignment = TextAnchor.MiddleRight;
             playlistRows.Add(row.GetComponent<Image>());
             playlistIndices.Add(i);
         }
@@ -228,11 +237,9 @@ public class StudyRoomComputerUI : MonoBehaviour
         if (pauseIcon) pauseIcon.SetActive(IsPlaying);
         float length = source && source.clip ? source.clip.length : 0f;
         float time = source && source.clip ? source.time : 0f;
-        timer.text = Duration(time) + "  /  " + Duration(length);
         progress.SetValueWithoutNotify(length > 0 ? time / length : 0f);
     }
 
-    private static string Duration(float seconds) => ((int)seconds / 60).ToString("00") + ":" + ((int)seconds % 60).ToString("00");
 
     public void BuildInterface()
     {
@@ -297,8 +304,6 @@ public class StudyRoomComputerUI : MonoBehaviour
         trackTitle = Label(window, "TrackTitle", "Nghe nhạc", new Vector2(.32f, .49f), new Vector2(.94f, .77f), 24, ink);
         progress = MakeSlider(window, "Progress", new Vector2(.07f, .38f), new Vector2(.93f, .43f));
         progress.onValueChanged.AddListener(value => { if (source && source.clip) source.time = Mathf.Min(value * source.clip.length, Mathf.Max(0f, source.clip.length - .01f)); });
-        timer = Label(window, "Timer", "00:00 / 00:00", new Vector2(.07f, .30f), new Vector2(.93f, .38f), 14, ink);
-        timer.alignment = TextAnchor.MiddleCenter;
         IconButton(window, "Previous", "Previous", new Vector2(.27f, .145f), new Vector2(.39f, .285f), () => NextTrack(-1), lavender);
         var playback = IconButton(window, "PlayPause", "Play", new Vector2(.43f, .125f), new Vector2(.57f, .305f), TogglePlayback, mint);
         playIcon = playback.transform.Find("Icon").gameObject;
@@ -311,7 +316,7 @@ public class StudyRoomComputerUI : MonoBehaviour
         volume.onValueChanged.AddListener(value => RoomAudioChannel.SetVolume(RoomAudioChannel.Channel.BackgroundMusic, value));
         // Keep the compact player on the left and reserve a separate scroll area for the library.
         var playerPanel = Box(window, "Player", new Vector2(.015f, .025f), new Vector2(.53f, .98f), Color.clear);
-        string[] playerControls = { "Album", "TrackTitle", "Progress", "Timer", "Previous", "PlayPause", "Next", "VolumeIcon", "Volume" };
+        string[] playerControls = { "Album", "TrackTitle", "Progress", "Previous", "PlayPause", "Next", "VolumeIcon", "Volume" };
         foreach (var control in playerControls) window.Find(control).SetParent(playerPanel, false);
         Label(window, "PlaylistTitle", "Bài hát", new Vector2(.57f, .84f), new Vector2(.83f, .97f), 17, ink);
         var viewport = Box(window, "Playlist", new Vector2(.56f, .06f), new Vector2(.97f, .79f), Color.clear);
