@@ -73,6 +73,7 @@ public static class StudyRoomMenuBuilder
         for (int i = 0; i < 3; i++) Button(settings, "Quality" + i, new[] { "Thấp", "Vừa", "Cao" }[i], new Vector2(130, 48), new Vector2(-144 + i * 144, -159), i == 2 ? Accent : Pale);
         Button(settings, "Back", "Lưu & quay lại", new Vector2(420, 46), new Vector2(0, -220), Pale);
 
+        StudyRoomMenu.EnsureVoiceControls(settings);
         var home = Panel(overlay, "HomePanel", new Vector2(440, 370));
         Text(home, "Eyebrow", "CHÀO MỪNG VỀ NHÀ", 13, new Vector2(370, 24), new Vector2(0, 135), Accent);
         Text(home, "Title", "StudyRoom", 40, new Vector2(370, 58), new Vector2(0, 81), Ink);

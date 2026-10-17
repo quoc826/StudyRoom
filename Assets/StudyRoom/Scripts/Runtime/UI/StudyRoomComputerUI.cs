@@ -13,7 +13,7 @@ public class StudyRoomComputerUI : MonoBehaviour
     private RectTransform laptopFrame;
     private CanvasGroup desktopFade;
     private Coroutine appearance;
-    private GameObject desktop, musicWindow, audioObject;
+    private GameObject desktop, musicWindow;
     private AudioSource source;
     private PlayerController player;
     private bool restorePlayer, paused;
@@ -37,11 +37,13 @@ public class StudyRoomComputerUI : MonoBehaviour
     private void Start()
     {
         EnsureAudio();
-        var available = new List<int>();
-        for (int i = 0; i < tracks.Length; i++)
-            if (tracks[i]) available.Add(i);
-        if (available.Count > 0)
-            SelectTrack(available[UnityEngine.Random.Range(0, available.Count)], true);
+        int defaultIndex = Array.FindIndex(tracks, clip => clip);
+        if (defaultIndex < 0) return;
+        StudyRoomBackgroundMusic.RestartDefault(tracks[defaultIndex]);
+        trackIndex = defaultIndex;
+        paused = false;
+        RefreshPlaylistSelection();
+        Refresh();
     }
 
     public static bool IsComputer(Transform target)
@@ -129,20 +131,15 @@ public class StudyRoomComputerUI : MonoBehaviour
     private void EnsureAudio()
     {
         if (source) return;
-        audioObject = new GameObject("Computer Music", typeof(AudioSource));
-        audioObject.transform.SetParent(transform, false);
-        source = audioObject.GetComponent<AudioSource>();
-        source.playOnAwake = false;
-        source.loop = true;
-        source.spatialBlend = 0f;
-        source.volume = RoomAudioChannel.GetVolume(RoomAudioChannel.Channel.BackgroundMusic);
         RoomAudioChannel.VolumesChanged += SyncVolume;
         if (tracks == null || Array.FindIndex(tracks, clip => clip) < 0)
         {
             generatedTracks = new[] { CreateStudyLoop("Góc học yên tĩnh", 0), CreateStudyLoop("Chiều thư giãn", 5) };
             tracks = generatedTracks;
         }
-        SelectTrack(Array.FindIndex(tracks, clip => clip), false);
+        source = StudyRoomBackgroundMusic.Ensure(tracks[Array.FindIndex(tracks, clip => clip)]);
+        trackIndex = Array.IndexOf(tracks, source.clip);
+        if (trackIndex < 0) trackIndex = 0;
     }
 
     public void TogglePlayback()
@@ -219,7 +216,6 @@ public class StudyRoomComputerUI : MonoBehaviour
     private void SyncVolume()
     {
         float value = RoomAudioChannel.GetVolume(RoomAudioChannel.Channel.BackgroundMusic);
-        if (source) source.volume = value;
         if (volume) volume.SetValueWithoutNotify(value);
     }
 

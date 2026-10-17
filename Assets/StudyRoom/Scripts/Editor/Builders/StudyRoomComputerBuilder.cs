@@ -29,8 +29,18 @@ public static class StudyRoomComputerBuilder
             .OrderBy(path => path, System.StringComparer.OrdinalIgnoreCase)
             .Select(path => AssetDatabase.LoadAssetAtPath<AudioClip>(path))
             .Where(clip => clip).ToArray();
+        var defaultMusic = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/StudyRoom/Sound/menu and home.mp3");
+        if (defaultMusic) tracks = new[] { defaultMusic }.Concat(tracks).ToArray();
         bool wasDirty = scene.isDirty;
         bool changed = false;
+        foreach (var root in scene.GetRootGameObjects())
+            foreach (var home in root.GetComponentsInChildren<StudyRoomStartScreen>(true))
+            {
+                if (home.defaultMusic == defaultMusic) continue;
+                home.defaultMusic = defaultMusic;
+                EditorUtility.SetDirty(home);
+                changed = true;
+            }
         foreach (var root in scene.GetRootGameObjects())
             foreach (var loader in root.GetComponentsInChildren<StudyRoomRoomLoader>(true))
             {

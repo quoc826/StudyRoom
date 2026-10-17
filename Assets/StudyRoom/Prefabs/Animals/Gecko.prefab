@@ -933,6 +933,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StudyRoomAnimal
   moveSpeed: 0.25
   movementState: Walk
+  interactionSound: {fileID: 8300000, guid: 4df96282a464f2e47b4616c195b37b26, type: 3}
 --- !u!1 &8286973743359197017
 GameObject:
   m_ObjectHideFlags: 0

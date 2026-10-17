@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class StudyRoomStartScreen : MonoBehaviour
 {
     public StudyRoomCatalog catalog;
+    public AudioClip defaultMusic;
     public Font regularFont;
     public Font titleFont;
     public Sprite roundedSprite;
@@ -35,6 +36,7 @@ public class StudyRoomStartScreen : MonoBehaviour
 
     private void Start()
     {
+        StudyRoomBackgroundMusic.RestartDefault(defaultMusic);
         if (!catalog || catalog.characters == null || catalog.characters.Length == 0)
         {
             Debug.LogError("StudyRoom needs a catalog with at least one character.", this);
@@ -82,7 +84,7 @@ public class StudyRoomStartScreen : MonoBehaviour
             if (room == null || character == null) continue;
             var selected = save;
             string description = save.id == "initial-room"
-                ? "Phòng khởi đầu đủ nội thất · Học để kiếm coin mua phòng mới"
+                ? "Phòng khởi đầu · Học để kiếm coin mua thêm nội thất và phòng mới"
                 : room.displayName + " · " + character.displayName;
             Card(save.name, description,
                 "Vào phòng", room.thumbnail, false, () => EnterRoom(selected));

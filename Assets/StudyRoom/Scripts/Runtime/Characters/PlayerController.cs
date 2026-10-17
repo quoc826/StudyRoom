@@ -56,6 +56,12 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        foreach (var source in GetComponentsInChildren<AudioSource>(true))
+        {
+            var channel = source.GetComponent<RoomAudioChannel>();
+            if (!channel) channel = source.gameObject.AddComponent<RoomAudioChannel>();
+            channel.SetChannel(RoomAudioChannel.Channel.Voice);
+        }
         characterController = GetComponent<CharacterController>();
         if (!inputCamera) inputCamera = Camera.main;
         if (!animator) animator = GetComponentInChildren<Animator>();
@@ -361,6 +367,12 @@ public class PlayerController : MonoBehaviour
             // Movement boundaries are invisible and must not block pointer interaction.
             if (hit.transform.IsChildOf(transform) || characterDistance <= hit.distance)
                 return PlayRandomInteraction();
+            var animal = hit.collider.GetComponentInParent<StudyRoomAnimal>();
+            if (animal)
+            {
+                animal.PlayInteractionSound();
+                return true;
+            }
             if (TrySitOn(hit.transform)) return true;
             var renderer = hit.collider.GetComponent<Renderer>();
             if (!renderer) renderer = hit.collider.GetComponentInChildren<Renderer>();

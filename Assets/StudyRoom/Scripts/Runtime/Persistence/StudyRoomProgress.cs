@@ -36,6 +36,7 @@ public class StudyRoomProgress
         public string name;
         public string roomId;
         public string characterId;
+        public bool starterLayoutPending;
         public List<PlacedDecoration> decorations = new List<PlacedDecoration>();
         public List<FurnitureChange> furnitureChanges = new List<FurnitureChange>();
     }
@@ -93,16 +94,21 @@ public class StudyRoomProgress
         {
             if (room.decorations == null) room.decorations = new List<PlacedDecoration>();
             if (room.furnitureChanges == null) room.furnitureChanges = new List<FurnitureChange>();
+            // Older saves consumed stock on placement; placed items still grant ownership.
+            foreach (var placed in room.decorations)
+                Stock(placed.itemId).count = 1;
         }
+        foreach (var stock in data.decorationStock)
+            stock.count = stock.count > 0 ? 1 : 0;
         if (data.daily == null) data.daily = new DailyRewards();
         if (data.daily.claimed == null || data.daily.claimed.Length != StudyRoomDailyQuests.All.Count)
             Array.Resize(ref data.daily.claimed, StudyRoomDailyQuests.All.Count);
         data.rewardSeconds = SafeSeconds(data.rewardSeconds) % CoinIntervalSeconds;
         data.daily.onlineSeconds = SafeSeconds(data.daily.onlineSeconds);
         data.daily.studySeconds = SafeSeconds(data.daily.studySeconds);
-        // The furnished starter is a fixed room, not purchased inventory or free furniture stock.
+        // Only newly granted starter rooms receive the minimal furniture layout.
         if (data.savedRooms.Count == 0 && catalog.FindRoom(catalog.initialRoomId) != null && catalog.FindCharacter(catalog.initialCharacterId) != null)
-            data.savedRooms.Add(new SavedRoom { id = "initial-room", name = "Góc học của tôi", roomId = catalog.initialRoomId, characterId = catalog.initialCharacterId });
+            data.savedRooms.Add(new SavedRoom { id = "initial-room", name = "Góc học của tôi", roomId = catalog.initialRoomId, characterId = catalog.initialCharacterId, starterLayoutPending = true });
         Save();
     }
 
@@ -210,21 +216,14 @@ public class StudyRoomProgress
 
     public int DecorationCount(string id) => data.decorationStock.Find(item => item.itemId == id)?.count ?? 0;
 
-    public int OwnedDecorationCount(string id)
-    {
-        int count = DecorationCount(id);
-        foreach (var room in data.savedRooms)
-            foreach (var placed in room.decorations)
-                if (placed.itemId == id) count++;
-        return count;
-    }
+    public int OwnedDecorationCount(string id) => DecorationCount(id);
 
     public bool TryBuyDecoration(StudyRoomShopCatalog shop, string id)
     {
         var item = shop ? shop.Find(id) : null;
-        if (item == null || !item.prefab || item.price <= 0 || data.coins < item.price || DecorationCount(id) == int.MaxValue) return false;
+        if (item == null || !item.prefab || item.price <= 0 || data.coins < item.price || OwnedDecorationCount(id) > 0) return false;
         data.coins -= item.price;
-        Stock(id).count++;
+        Stock(id).count = 1;
         Save();
         return true;
     }
@@ -236,7 +235,6 @@ public class StudyRoomProgress
         if (room == null || item == null || !item.prefab || DecorationCount(itemId) <= 0 ||
             !Finite(position.x) || !Finite(position.y) || !Finite(position.z) || !Finite(rotation)) return null;
         var placed = new PlacedDecoration { instanceId = Guid.NewGuid().ToString("N"), itemId = itemId, localPosition = position, rotation = rotation };
-        Stock(itemId).count--;
         room.decorations.Add(placed);
         Save();
         return placed;
@@ -246,9 +244,9 @@ public class StudyRoomProgress
     {
         var room = data.savedRooms.Find(saved => saved.id == roomId);
         var placed = room?.decorations.Find(item => item.instanceId == instanceId);
-        if (placed == null || DecorationCount(placed.itemId) == int.MaxValue) return false;
+        if (placed == null) return false;
         room.decorations.Remove(placed);
-        Stock(placed.itemId).count++;
+        Stock(placed.itemId).count = 1;
         Save();
         return true;
     }

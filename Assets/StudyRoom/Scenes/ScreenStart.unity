@@ -668,6 +668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86d60a6d7b79b9e4dac2b0c9a499fa5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudyRoomStartScreen
+  defaultMusic: {fileID: 8300000, guid: 4db4b74df01aba84bac19c85ac64f943, type: 3}
   catalog: {fileID: 11400000, guid: 0f7eb53124bb5f84aa9d4430bf5fe384, type: 2}
   regularFont: {fileID: 12800000, guid: 4e7bfbd98f7ee7345a560c817a8f831e, type: 3}
   titleFont: {fileID: 12800000, guid: 2c30dd14ea17d91459291b12e41e08d2, type: 3}

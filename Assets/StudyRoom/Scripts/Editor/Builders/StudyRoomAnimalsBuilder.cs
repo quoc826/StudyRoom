@@ -60,6 +60,8 @@ public static class StudyRoomAnimalsBuilder
                 box.size = new Vector3(Mathf.Max(0.12f, bounds.size.x), Mathf.Max(0.12f, bounds.size.y), Mathf.Max(0.12f, bounds.size.z));
                 var animal = root.AddComponent<StudyRoomAnimal>();
                 animal.SetMovementAnimation(source.name == "Herring" || source.name == "Squid" ? "Swim" : "Walk");
+                animal.SetInteractionSound(AssetDatabase.LoadAssetAtPath<AudioClip>(
+                    "Assets/StudyRoom/Sound/SoundPet/" + source.name + ".mp3"));
                 string prefabPath = OutputFolder + "/" + source.name + ".prefab";
                 var prefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
                 var thumbnail = (Texture2D)thumbnailMethod.Invoke(null, new object[] { prefab, Thumbnails + "/" + source.name + ".png", false });

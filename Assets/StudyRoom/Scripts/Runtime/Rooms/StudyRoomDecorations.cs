@@ -87,6 +87,29 @@ public class StudyRoomDecorations : MonoBehaviour
             AddCollider(target);
         }
         var saved = FindRoom();
+        if (saved != null && saved.starterLayoutPending)
+        {
+            // Keep the desk seat and computer peripherals, alongside the room shell.
+            var starterFurniture = new HashSet<string>(StringComparer.Ordinal)
+            {
+                "Room_1_Table_1", "Room_1_Chair_1", "Room_1_PC_Monitor_1",
+                "Room_1_Keyboard_1", "Room_1_PC_mouse_1"
+            };
+            foreach (var entry in builtInFurniture)
+            {
+                if (starterFurniture.Contains(entry.Key.name)) continue;
+                if (saved.furnitureChanges.Exists(change => change.hierarchyKey == entry.Value)) continue;
+                saved.furnitureChanges.Add(new StudyRoomProgress.FurnitureChange
+                {
+                    hierarchyKey = entry.Value,
+                    localPosition = entry.Key.transform.localPosition,
+                    localRotation = entry.Key.transform.localRotation,
+                    removed = true
+                });
+            }
+            saved.starterLayoutPending = false;
+            economy.Progress.Flush();
+        }
         if (saved != null)
             foreach (var entry in builtInFurniture)
             {

@@ -12,8 +12,8 @@ public class StudyRoomMenu : MonoBehaviour
     private GameObject overlay, menu, settings, home;
     private PlayerController player;
     private bool restorePlayer;
-    private Slider sfx, music;
-    private Text sfxValue, musicValue;
+    private Slider sfx, music, voice;
+    private Text sfxValue, musicValue, voiceValue;
     private Button[] qualityButtons;
     private readonly Color accent = new Color32(245, 173, 198, 255);
     private readonly Color pale = new Color32(232, 220, 248, 255);
@@ -42,6 +42,7 @@ public class StudyRoomMenu : MonoBehaviour
         Bind(menu.transform.Find("Close"), CloseMenu);
         var settingsContent = settings.transform.Find("SettingsViewport/Content");
         if (!settingsContent) settingsContent = settings.transform;
+        EnsureVoiceControls(settingsContent);
         Bind(settingsContent.Find("Back"), () => { PlayerPrefs.Save(); ShowPanel(menu); });
         Bind(home.transform.Find("EnterRoom"), CloseMenu);
         Bind(home.transform.Find("Settings"), () => ShowPanel(settings));
@@ -49,11 +50,15 @@ public class StudyRoomMenu : MonoBehaviour
         music = settingsContent.Find("MusicSlider").GetComponent<Slider>();
         sfxValue = settingsContent.Find("SfxValue").GetComponent<Text>();
         musicValue = settingsContent.Find("MusicValue").GetComponent<Text>();
+        voice = settingsContent.Find("VoiceSlider").GetComponent<Slider>();
+        voiceValue = settingsContent.Find("VoiceValue").GetComponent<Text>();
+        voice.SetValueWithoutNotify(RoomAudioChannel.GetVolume(RoomAudioChannel.Channel.Voice));
         sfx.SetValueWithoutNotify(RoomAudioChannel.GetVolume(RoomAudioChannel.Channel.Sfx));
         music.SetValueWithoutNotify(RoomAudioChannel.GetVolume(RoomAudioChannel.Channel.BackgroundMusic));
         RefreshVolumeLabels();
         sfx.onValueChanged.AddListener(value => { RoomAudioChannel.SetVolume(RoomAudioChannel.Channel.Sfx, value); RefreshVolumeLabels(); });
         music.onValueChanged.AddListener(value => { RoomAudioChannel.SetVolume(RoomAudioChannel.Channel.BackgroundMusic, value); RefreshVolumeLabels(); });
+        voice.onValueChanged.AddListener(value => { RoomAudioChannel.SetVolume(RoomAudioChannel.Channel.Voice, value); RefreshVolumeLabels(); });
         qualityButtons = new Button[3];
         for (int i = 0; i < 3; i++)
         {
@@ -138,6 +143,30 @@ public class StudyRoomMenu : MonoBehaviour
     {
         sfxValue.text = Mathf.RoundToInt(sfx.value * 100f) + "%";
         musicValue.text = Mathf.RoundToInt(music.value * 100f) + "%";
+        voiceValue.text = Mathf.RoundToInt(voice.value * 100f) + "%";
+    }
+
+    public static void EnsureVoiceControls(Transform content)
+    {
+        if (content.Find("VoiceSlider")) return;
+        foreach (string suffix in new[] { "Label", "Value", "Slider" })
+        {
+            var original = content.Find("Music" + suffix);
+            var copy = Instantiate(original.gameObject, content, false);
+            copy.name = "Voice" + suffix;
+            ((RectTransform)copy.transform).anchoredPosition -= new Vector2(0, 86);
+            if (suffix == "Label") copy.GetComponent<Text>().text = "Voice · Pet & nhân vật";
+        }
+        foreach (string name in new[] { "GraphicsTitle", "Quality0", "Quality1", "Quality2", "Back" })
+        {
+            var rect = content.Find(name) as RectTransform;
+            if (rect) rect.anchoredPosition -= new Vector2(0, 86);
+        }
+        if (!content.GetComponentInParent<ScrollRect>())
+        {
+            var rect = (RectTransform)content;
+            rect.sizeDelta += new Vector2(0, 172);
+        }
     }
 
     private void ApplyQuality(int index)

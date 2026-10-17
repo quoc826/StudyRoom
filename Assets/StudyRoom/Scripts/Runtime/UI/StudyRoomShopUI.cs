@@ -139,7 +139,7 @@ public class StudyRoomShopUI : MonoBehaviour
         page = 0;
         showingRoom = false; showingInventory = true; inventorySignature = null;
         title.text = "Đồ của bạn";
-        message.text = "Vật phẩm đã mua · Xem số lượng trong kho và chọn Đặt";
+        message.text = "Mua một lần · Đặt không giới hạn trong mọi phòng";
         Refresh(); scroll.verticalNormalizedPosition = 1;
     }
 
@@ -217,8 +217,8 @@ public class StudyRoomShopUI : MonoBehaviour
             int stock = economy.Progress.DecorationCount(entry.Key);
             entry.Value.stock.text = economy.Progress.OwnedDecorationCount(entry.Key) == 0
                 ? "Chưa sở hữu · Mua để sử dụng"
-                : "Trong kho: " + stock + (showingInventory ? " · Đã đặt: " + PlacedCount(entry.Key) : "");
-            if (entry.Value.buy) entry.Value.buy.interactable = economy.Progress.Coins >= item.price;
+                : "Đã sở hữu · Đặt không giới hạn" + (showingInventory ? " · Đã đặt: " + PlacedCount(entry.Key) : "");
+            if (entry.Value.buy) entry.Value.buy.interactable = stock <= 0 && economy.Progress.Coins >= item.price;
             entry.Value.place.interactable = stock > 0;
         }
     }
@@ -329,7 +329,7 @@ public class StudyRoomShopUI : MonoBehaviour
         foreach (var item in Paginate(FilteredItems()))
         {
             var row = ItemCard(item.id, item.displayName, item.description, item.thumbnail);
-            var stock = Label(row, "Stock", "Trong kho: 0", 13, new Vector2(250, 24), new Vector2(122, -91));
+            var stock = Label(row, "Stock", "Chưa sở hữu", 13, new Vector2(250, 24), new Vector2(122, -91));
             var buy = Button(row, "Buy", "Mua · " + item.price, new Vector2(142, 40), Pink);
             StudyRoomCoinIcon.SetPurchaseLabel(buy, item.price);
             Right(buy.GetComponent<RectTransform>(), -12, -14);

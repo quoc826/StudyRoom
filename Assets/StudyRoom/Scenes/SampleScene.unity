@@ -181,7 +181,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -1612,7 +1612,7 @@ MonoBehaviour:
     m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 12
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -1825,7 +1825,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -1904,7 +1904,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 17
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -2422,7 +2422,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -6906,7 +6906,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -7669,7 +7669,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -7775,7 +7775,7 @@ MonoBehaviour:
     m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 12
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -7854,7 +7854,7 @@ MonoBehaviour:
     m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 12
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -7933,7 +7933,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -8428,7 +8428,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 16
-    m_MaxSize: 28
+    m_MaxSize: 25
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -9224,6 +9224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudyRoomComputerUI
   tracks:
+  - {fileID: 8300000, guid: 4db4b74df01aba84bac19c85ac64f943, type: 3}
   - {fileID: 8300000, guid: d66d2f0824c99ba4ba79145e8b1f632d, type: 3}
   - {fileID: 8300000, guid: 33a706cc5d9fbe849b677943a3a202ed, type: 3}
   - {fileID: 8300000, guid: 17f00b4f4c61f33479ca9f5072532383, type: 3}
@@ -9242,7 +9243,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 30af924050aa5ac46afc27224b86533d, type: 3}
   - {fileID: 8300000, guid: 7616dba2eaac44b4aa6ebe646261f6b8, type: 3}
   - {fileID: 8300000, guid: cc33593116a1aa748ac68ed247098468, type: 3}
-  - {fileID: 8300000, guid: 847c86f28eb7544459fc5e6d116d0d16, type: 3}
   - {fileID: 8300000, guid: 429b630e961bef24ea9d2c4b91b77998, type: 3}
   laptopTexture: {fileID: 2800000, guid: 8749a9420276a424fb8361824ca82550, type: 3}
   appearanceDuration: 0.35
@@ -10436,7 +10436,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -10694,7 +10694,7 @@ MonoBehaviour:
     m_FontSize: 15
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 15
+    m_MinSize: 16
     m_MaxSize: 19
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -11247,7 +11247,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -11942,7 +11942,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -13655,7 +13655,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -13734,7 +13734,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -14019,7 +14019,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -14147,7 +14147,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -15778,7 +15778,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -16505,7 +16505,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -16684,7 +16684,7 @@ MonoBehaviour:
     m_FontSize: 14
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 14
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -17074,7 +17074,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 16
-    m_MaxSize: 28
+    m_MaxSize: 26
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -17663,7 +17663,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 16
-    m_MaxSize: 40
+    m_MaxSize: 38
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -17926,7 +17926,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -19553,7 +19553,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -19842,7 +19842,7 @@ MonoBehaviour:
     m_FontSize: 15
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 15
+    m_MinSize: 16
     m_MaxSize: 19
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -23168,7 +23168,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 16
-    m_MaxSize: 32
+    m_MaxSize: 30
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -24144,7 +24144,7 @@ MonoBehaviour:
     m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 12
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -24223,7 +24223,7 @@ MonoBehaviour:
     m_FontSize: 15
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 15
+    m_MinSize: 16
     m_MaxSize: 19
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -24567,7 +24567,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -27188,7 +27188,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -27267,7 +27267,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -27425,7 +27425,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -28532,7 +28532,7 @@ MonoBehaviour:
     m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 13
+    m_MinSize: 16
     m_MaxSize: 18
     m_Alignment: 3
     m_AlignByGeometry: 0

@@ -282,6 +282,9 @@ public class StudyRoomResponsiveUI : MonoBehaviour
         settings.localScale = Vector3.one;
         settings.sizeDelta = new Vector2(Mathf.Min(540, available.x - 24), Mathf.Min(680, available.y - 24));
         var body = MakeScrollableSettings(settings);
+        StudyRoomMenu.EnsureVoiceControls(body);
+        var bodyRect = (RectTransform)body;
+        bodyRect.sizeDelta = new Vector2(bodyRect.sizeDelta.x, 818);
         Header(body, "Eyebrow", 20, 20, 16, 28, 18);
         Header(body, "Title", 20, 20, 48, 52, 30);
         Header(body, "Subtitle", 20, 20, 106, 48, 19);
@@ -291,14 +294,17 @@ public class StudyRoomResponsiveUI : MonoBehaviour
         Header(body, "MusicLabel", 20, 88, 300, 48, 19);
         Top(body, "MusicValue", 20, 300, 64, 48, true);
         Header(body, "MusicSlider", 20, 20, 356, 64);
-        Header(body, "GraphicsTitle", 20, 20, 442, 36, 18);
+        Header(body, "VoiceLabel", 20, 88, 438, 48, 19);
+        Top(body, "VoiceValue", 20, 438, 64, 48, true);
+        Header(body, "VoiceSlider", 20, 20, 494, 64);
+        Header(body, "GraphicsTitle", 20, 20, 580, 36, 18);
         for (int i = 0; i < 3; i++)
         {
             var quality = R(body, "Quality" + i); if (!quality) continue;
             quality.anchorMin = new Vector2(i / 3f, 1); quality.anchorMax = new Vector2((i + 1) / 3f, 1);
-            quality.offsetMin = new Vector2(12, -558); quality.offsetMax = new Vector2(-12, -486);
+            quality.offsetMin = new Vector2(12, -696); quality.offsetMax = new Vector2(-12, -624);
         }
-        Header(body, "Back", 20, 20, 582, 72);
+        Header(body, "Back", 20, 20, 720, 72);
         foreach (var slider in body.GetComponentsInChildren<Slider>(true)) LayoutSlider(slider);
     }
 

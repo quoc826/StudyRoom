@@ -5,6 +5,10 @@ public class StudyRoomAnimal : MonoBehaviour
 {
     [SerializeField, Min(0.01f)] private float moveSpeed = 0.25f;
     [SerializeField] private string movementState = "Walk";
+    [SerializeField] private AudioClip interactionSound;
+    private AudioSource soundSource;
+    private bool soundPending;
+    private double soundReadyAt;
     private StudyRoomDecorations room;
     private Animator animator;
     private Vector3 destination;
@@ -13,6 +17,31 @@ public class StudyRoomAnimal : MonoBehaviour
     private bool moving;
 
     public void SetMovementAnimation(string state) => movementState = state;
+    public void SetInteractionSound(AudioClip clip) => interactionSound = clip;
+
+    public void PlayInteractionSound()
+    {
+        if (!isActiveAndEnabled || !interactionSound || !room || room.IsPlacing || room.IsEditing) return;
+        if (soundPending)
+        {
+            if (soundSource && soundSource.isPlaying) return;
+            soundPending = false;
+            soundReadyAt = Time.realtimeSinceStartupAsDouble + 5d;
+        }
+        if (Time.realtimeSinceStartupAsDouble < soundReadyAt) return;
+        if (!soundSource)
+        {
+            soundSource = gameObject.AddComponent<AudioSource>();
+            soundSource.playOnAwake = false;
+            soundSource.loop = false;
+            soundSource.spatialBlend = 0f;
+            var channel = gameObject.AddComponent<RoomAudioChannel>();
+            channel.SetChannel(RoomAudioChannel.Channel.Voice);
+        }
+        soundSource.clip = interactionSound;
+        soundSource.Play();
+        soundPending = true;
+    }
 
     public void Initialize(StudyRoomDecorations owner, bool activate = true)
     {
@@ -44,7 +73,15 @@ public class StudyRoomAnimal : MonoBehaviour
         position + Vector3.up * (groundOffset + height * 0.5f),
         new Vector3(radius * 2f, height, radius * 2f));
 
-    private void Update() => Tick(Time.deltaTime);
+    private void Update()
+    {
+        if (soundPending && soundSource && !soundSource.isPlaying)
+        {
+            soundPending = false;
+            soundReadyAt = Time.realtimeSinceStartupAsDouble + 5d;
+        }
+        Tick(Time.deltaTime);
+    }
 
     private void Tick(float elapsed)
     {
