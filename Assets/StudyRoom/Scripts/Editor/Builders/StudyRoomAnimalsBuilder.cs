@@ -62,6 +62,7 @@ public static class StudyRoomAnimalsBuilder
                 animal.SetMovementAnimation(source.name == "Herring" || source.name == "Squid" ? "Swim" : "Walk");
                 animal.SetInteractionSound(AssetDatabase.LoadAssetAtPath<AudioClip>(
                     "Assets/StudyRoom/Sound/SoundPet/" + source.name + ".mp3"));
+                root.transform.localScale = Vector3.one * 1.15f;
                 string prefabPath = OutputFolder + "/" + source.name + ".prefab";
                 var prefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
                 var thumbnail = (Texture2D)thumbnailMethod.Invoke(null, new object[] { prefab, Thumbnails + "/" + source.name + ".png", false });
@@ -76,6 +77,7 @@ public static class StudyRoomAnimalsBuilder
             finally { UnityEngine.Object.DestroyImmediate(root); }
         }
         shop.items = items.ToArray();
+        StudyRoomShopPricing.Apply(shop);
         EditorUtility.SetDirty(shop);
         AssetDatabase.SaveAssets();
     }

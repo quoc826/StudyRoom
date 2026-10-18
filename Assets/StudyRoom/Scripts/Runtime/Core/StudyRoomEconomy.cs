@@ -85,7 +85,10 @@ public class StudyRoomEconomy : MonoBehaviour
     }
 
     private void Notify() => StateChanged?.Invoke();
-    private void OnQuestCompleted(int index) => QuestCompleted?.Invoke(index);
+    private void OnQuestCompleted(int index)
+    {
+        QuestCompleted?.Invoke(index);
+    }
 
     private void SceneChanged(Scene previous, Scene next)
     {

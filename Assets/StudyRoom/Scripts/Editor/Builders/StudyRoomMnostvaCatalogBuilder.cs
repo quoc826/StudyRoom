@@ -49,6 +49,7 @@ public static class StudyRoomMnostvaCatalogBuilder
             if (!item.thumbnail) item.thumbnail = (Texture2D)Thumbnail.Invoke(null, new object[] { prefab, Images + "/" + prefab.name + ".png", false });
         }
         catalog.items = entries.OrderBy(i => i.category).ThenBy(i => i.displayName).ToArray();
+        StudyRoomShopPricing.Apply(catalog);
         EditorUtility.SetDirty(catalog);
         AssetDatabase.SaveAssets();
         return "Items " + Mathf.Min(offset + count, paths.Length) + "/" + paths.Length + "; shop total=" + catalog.items.Length;

@@ -15,6 +15,7 @@ public class StudyRoomAnimal : MonoBehaviour
     private float waitTime;
     private float radius, height, groundOffset;
     private bool moving;
+    private StudyRoomAnimalSpeech speech;
 
     public void SetMovementAnimation(string state) => movementState = state;
     public void SetInteractionSound(AudioClip clip) => interactionSound = clip;
@@ -41,6 +42,8 @@ public class StudyRoomAnimal : MonoBehaviour
         soundSource.clip = interactionSound;
         soundSource.Play();
         soundPending = true;
+        if (!speech) speech = gameObject.AddComponent<StudyRoomAnimalSpeech>();
+        speech.Show(interactionSound.name, soundSource);
     }
 
     public void Initialize(StudyRoomDecorations owner, bool activate = true)
@@ -81,6 +84,14 @@ public class StudyRoomAnimal : MonoBehaviour
             soundReadyAt = Time.realtimeSinceStartupAsDouble + 5d;
         }
         Tick(Time.deltaTime);
+    }
+
+    private void OnDisable()
+    {
+        if (soundSource) soundSource.Stop();
+        if (speech) speech.HideImmediately();
+        if (soundPending) soundReadyAt = Time.realtimeSinceStartupAsDouble + 5d;
+        soundPending = false;
     }
 
     private void Tick(float elapsed)

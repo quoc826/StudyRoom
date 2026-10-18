@@ -37,6 +37,7 @@ public static class StudyRoomShopBuilder
             EditorUtility.SetDirty(catalog);
         }
         Undo.RecordObject(loader, "Assign decoration shop");
+        StudyRoomShopPricing.Apply(catalog);
         loader.shopCatalog = catalog;
         var ui = loader.GetComponent<StudyRoomShopUI>();
         if (!ui) ui = Undo.AddComponent<StudyRoomShopUI>(loader.gameObject);
