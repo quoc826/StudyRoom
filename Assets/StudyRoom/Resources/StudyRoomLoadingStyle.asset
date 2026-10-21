@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 507659f31bd44b27a4e3f0ad772ad0cb, type: 3}
+  m_Name: StudyRoomLoadingStyle
+  m_EditorClassIdentifier:
+  furnishedRoom: {fileID: 2800000, guid: 3a15b82b2d9ba014a824ffe7b1259c72, type: 3}
+  mimi: {fileID: 2800000, guid: b7381e7cdafd8d745b1e85487fe2ba83, type: 3}
+  font: {fileID: 12800000, guid: 4e7bfbd98f7ee7345a560c817a8f831e, type: 3}
+  titleFont: {fileID: 12800000, guid: 2c30dd14ea17d91459291b12e41e08d2, type: 3}
+  rounded: {fileID: 8870037415665259782, guid: 57ef95cbe3d02224fa4dcc328c88f525, type: 2}
+  backgroundFx: {fileID: 1154473282432296488, guid: 6c70553ebc9fb4ed3909f58f71c9ce34, type: 3}

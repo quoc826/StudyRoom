@@ -9,6 +9,7 @@ public class StudyRoomStartScreen : MonoBehaviour
     public Font regularFont;
     public Font titleFont;
     public Sprite roundedSprite;
+    public GameObject homeBackgroundFx;
     [SerializeField] private GameObject authoredPreview;
 
     public StudyRoomProgress Progress { get; private set; }
@@ -63,6 +64,7 @@ public class StudyRoomStartScreen : MonoBehaviour
         confirmation.SetActive(false);
         roomNaming.SetActive(false);
         previewRig.SetActive(true);
+        PlayHomeIdle();
         RefreshWallet();
     }
 
@@ -255,6 +257,15 @@ public class StudyRoomStartScreen : MonoBehaviour
         Image(root, new Color32(213, 204, 231, 255)).sprite = null;
         start = Rect(root, "Start", Vector2.zero, Vector2.zero).gameObject; Stretch((RectTransform)start.transform);
         var startRect = (RectTransform)start.transform;
+        if (homeBackgroundFx)
+        {
+            var background = Rect(startRect, "PinkBackgroundFX", Vector2.zero, Vector2.zero);
+            Stretch(background);
+            var image = background.gameObject.AddComponent<RawImage>();
+            image.raycastTarget = false;
+            image.color = new Color32(255, 196, 232, 255);
+            background.gameObject.AddComponent<StudyRoomHomeBackgroundFX>().prefab = homeBackgroundFx;
+        }
         var press = start.AddComponent<Button>();
         start.AddComponent<StudyRoomButtonSound>();
         var hit = start.AddComponent<Image>(); hit.color = Color.clear; press.targetGraphic = hit;
@@ -357,7 +368,11 @@ public class StudyRoomStartScreen : MonoBehaviour
         rect.gameObject.AddComponent<StudyRoomButtonSound>();
         var picture = Rect(rect, "Thumbnail", new Vector2(165, 165), new Vector2(20, 0));
         picture.anchorMin = picture.anchorMax = new Vector2(0, 0.5f); picture.pivot = new Vector2(0, 0.5f);
-        var raw = picture.gameObject.AddComponent<RawImage>(); raw.texture = thumbnail; raw.raycastTarget = false;
+        var thumbnailImage = Rect(picture, "Image", Vector2.zero, Vector2.zero);
+        var raw = thumbnailImage.gameObject.AddComponent<RawImage>(); raw.texture = thumbnail; raw.raycastTarget = false;
+        var thumbnailAspect = thumbnailImage.gameObject.AddComponent<AspectRatioFitter>();
+        thumbnailAspect.aspectRatio = thumbnail ? (float)thumbnail.width / thumbnail.height : 1f;
+        thumbnailAspect.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
         var titleLabel = Label(rect, "Name", title, 23, Vector2.zero, Vector2.zero, true);
         titleLabel.supportRichText = false;
         PlaceCardText(titleLabel.rectTransform, -18, -75); titleLabel.alignment = TextAnchor.MiddleLeft;
@@ -431,6 +446,16 @@ public class StudyRoomStartScreen : MonoBehaviour
         var light = lightObject.AddComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.5f; light.cullingMask = 1 << 31; light.shadows = LightShadows.None;
         light.transform.localRotation = Quaternion.Euler(30, -25, 0);
         previewRig.SetActive(true);
+    }
+
+    private void PlayHomeIdle()
+    {
+        var animator = previewRig.GetComponentInChildren<Animator>();
+        if (!animator || !animator.runtimeAnimatorController) return;
+        int homeIdle = Animator.StringToHash("Base Layer.HomeIdle");
+        if (!animator.HasState(0, homeIdle)) return;
+        animator.Play(homeIdle, 0, 0f);
+        animator.Update(0f);
     }
 
     private void OnDestroy()

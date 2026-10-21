@@ -263,9 +263,9 @@ public class StudyRoomResponsiveUI : MonoBehaviour
             menu.localScale = Vector3.one * Mathf.Min(1, (available.y - 32) / 430f);
             Header(menu, "Eyebrow", 16, 16, 16, 28, 18);
             Header(menu, "Title", 16, 16, 52, 56, 27);
-            Header(menu, "Settings", 24, 24, 130, 72);
-            Header(menu, "Home", 24, 24, 222, 72);
-            Header(menu, "Close", 24, 24, 314, 72);
+            Header(menu, "Close", 24, 24, 130, 72);
+            Header(menu, "Settings", 24, 24, 222, 72);
+            Header(menu, "Home", 24, 24, 314, 72);
         }
         var home = R(overlay, "HomePanel");
         if (home)
@@ -280,31 +280,30 @@ public class StudyRoomResponsiveUI : MonoBehaviour
         }
         var settings = R(overlay, "SettingsPanel"); if (!settings) return;
         settings.localScale = Vector3.one;
-        settings.sizeDelta = new Vector2(Mathf.Min(540, available.x - 24), Mathf.Min(680, available.y - 24));
+        settings.sizeDelta = new Vector2(Mathf.Min(540, available.x - 24), Mathf.Min(624, available.y - 24));
         var body = MakeScrollableSettings(settings);
         StudyRoomMenu.EnsureVoiceControls(body);
         var bodyRect = (RectTransform)body;
-        bodyRect.sizeDelta = new Vector2(bodyRect.sizeDelta.x, 818);
-        Header(body, "Eyebrow", 20, 20, 16, 28, 18);
-        Header(body, "Title", 20, 20, 48, 52, 30);
-        Header(body, "Subtitle", 20, 20, 106, 48, 19);
-        Header(body, "SfxLabel", 20, 88, 170, 40, 20);
-        Top(body, "SfxValue", 20, 170, 64, 40, true);
-        Header(body, "SfxSlider", 20, 20, 218, 64);
-        Header(body, "MusicLabel", 20, 88, 300, 48, 19);
-        Top(body, "MusicValue", 20, 300, 64, 48, true);
-        Header(body, "MusicSlider", 20, 20, 356, 64);
-        Header(body, "VoiceLabel", 20, 88, 438, 48, 19);
-        Top(body, "VoiceValue", 20, 438, 64, 48, true);
-        Header(body, "VoiceSlider", 20, 20, 494, 64);
-        Header(body, "GraphicsTitle", 20, 20, 580, 36, 18);
+        bodyRect.sizeDelta = new Vector2(bodyRect.sizeDelta.x, 616);
+        Header(body, "Title", 20, 20, 40, 48, 30);
+        Header(body, "Subtitle", 20, 20, 92, 32, 19);
+        Header(body, "SfxLabel", 20, 88, 140, 32, 20);
+        Top(body, "SfxValue", 20, 140, 64, 32, true);
+        Header(body, "SfxSlider", 20, 20, 172, 48);
+        Header(body, "MusicLabel", 20, 88, 230, 32, 19);
+        Top(body, "MusicValue", 20, 230, 64, 32, true);
+        Header(body, "MusicSlider", 20, 20, 262, 48);
+        Header(body, "VoiceLabel", 20, 88, 320, 32, 19);
+        Top(body, "VoiceValue", 20, 320, 64, 32, true);
+        Header(body, "VoiceSlider", 20, 20, 352, 48);
+        Header(body, "GraphicsTitle", 20, 20, 420, 32, 18);
         for (int i = 0; i < 3; i++)
         {
             var quality = R(body, "Quality" + i); if (!quality) continue;
             quality.anchorMin = new Vector2(i / 3f, 1); quality.anchorMax = new Vector2((i + 1) / 3f, 1);
-            quality.offsetMin = new Vector2(12, -696); quality.offsetMax = new Vector2(-12, -624);
+            quality.offsetMin = new Vector2(12, -520); quality.offsetMax = new Vector2(-12, -464);
         }
-        Header(body, "Back", 20, 20, 720, 72);
+        Header(body, "Back", 20, 20, 540, 56);
         foreach (var slider in body.GetComponentsInChildren<Slider>(true)) LayoutSlider(slider);
     }
 

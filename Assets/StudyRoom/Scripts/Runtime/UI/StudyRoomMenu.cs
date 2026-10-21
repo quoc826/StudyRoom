@@ -31,6 +31,8 @@ public class StudyRoomMenu : MonoBehaviour
         menu = overlay.transform.Find("MenuPanel").gameObject;
         settings = overlay.transform.Find("SettingsPanel").gameObject;
         home = overlay.transform.Find("HomePanel").gameObject;
+        menu.transform.Find("Home").GetComponent<Image>().color = pale;
+        menu.transform.Find("Close").GetComponent<Image>().color = accent;
         player = FindAnyObjectByType<PlayerController>();
         Bind(canvas.Find("MenuButton"), OpenMenu);
         Bind(menu.transform.Find("Settings"), () => ShowPanel(settings));
@@ -42,6 +44,8 @@ public class StudyRoomMenu : MonoBehaviour
         Bind(menu.transform.Find("Close"), CloseMenu);
         var settingsContent = settings.transform.Find("SettingsViewport/Content");
         if (!settingsContent) settingsContent = settings.transform;
+        var settingsEyebrow = settingsContent.Find("Eyebrow");
+        if (settingsEyebrow) settingsEyebrow.gameObject.SetActive(false);
         EnsureVoiceControls(settingsContent);
         Bind(settingsContent.Find("Back"), () => { PlayerPrefs.Save(); ShowPanel(menu); });
         Bind(home.transform.Find("EnterRoom"), CloseMenu);

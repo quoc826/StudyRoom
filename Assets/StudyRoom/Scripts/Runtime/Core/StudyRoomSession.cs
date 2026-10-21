@@ -12,10 +12,11 @@ public static class StudyRoomSession
 
     public static bool OpenRoom(StudyRoomProgress.SavedRoom saved)
     {
-        if (saved == null || !Application.CanStreamedLevelBeLoaded(RoomScene)) return false;
+        if (saved == null || StudyRoomLoadingScreen.IsLoading || !Application.CanStreamedLevelBeLoaded(RoomScene)) return false;
         pendingRoom = saved;
-        SceneManager.LoadSceneAsync(RoomScene, LoadSceneMode.Single);
-        return true;
+        if (StudyRoomLoadingScreen.Load(RoomScene)) return true;
+        pendingRoom = null;
+        return false;
     }
 
     public static StudyRoomProgress.SavedRoom TakeSelection()
@@ -27,8 +28,9 @@ public static class StudyRoomSession
 
     public static void ReturnHome()
     {
+        if (StudyRoomLoadingScreen.IsLoading) return;
         if (Application.CanStreamedLevelBeLoaded(StartScene))
-            SceneManager.LoadSceneAsync(StartScene, LoadSceneMode.Single);
+            StudyRoomLoadingScreen.Load(StartScene, true);
         else Debug.LogError("ScreenStart is missing from the build scene list.");
     }
 }

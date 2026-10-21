@@ -59,12 +59,11 @@ public static class StudyRoomMenuBuilder
         var menu = Panel(overlay, "MenuPanel", new Vector2(360, 386));
         Text(menu, "Eyebrow", "STUDY ROOM", 13, new Vector2(290, 24), new Vector2(0, 144), Accent);
         Text(menu, "Title", "Một chút nghỉ ngơi", 26, new Vector2(310, 46), new Vector2(0, 108), Ink);
-        Button(menu, "Settings", "Settings", new Vector2(292, 56), new Vector2(0, 33), Pale);
-        Button(menu, "Home", "Home", new Vector2(292, 56), new Vector2(0, -37), Accent);
-        Button(menu, "Close", "Tiếp tục", new Vector2(292, 48), new Vector2(0, -113), Cream);
+        Button(menu, "Close", "Tiếp tục", new Vector2(292, 56), new Vector2(0, 33), Accent);
+        Button(menu, "Settings", "Settings", new Vector2(292, 56), new Vector2(0, -37), Pale);
+        Button(menu, "Home", "Home", new Vector2(292, 48), new Vector2(0, -113), Pale);
 
         var settings = Panel(overlay, "SettingsPanel", new Vector2(500, 510));
-        Text(settings, "Eyebrow", "KHÔNG GIAN CỦA BẠN", 13, new Vector2(420, 24), new Vector2(0, 209), Accent);
         Text(settings, "Title", "Settings", 32, new Vector2(420, 44), new Vector2(0, 170), Ink);
         Text(settings, "Subtitle", "Điều chỉnh cho buổi học thật thoải mái", 16, new Vector2(440, 28), new Vector2(0, 130), Ink);
         Volume(settings, "Sfx", "SFX · Hiệu ứng", 77);
@@ -148,7 +147,7 @@ public static class StudyRoomMenuBuilder
         {
             Undo.RecordObject(button, "Style cute button");
             var image = button.GetComponent<Image>();
-            bool primary = button.name == "Home" || button.name == "EnterRoom" || button.name == "MenuButton" || button.name == "Quality2";
+            bool primary = (button.name == "Close" && button.transform.parent.name == "MenuPanel") || button.name == "EnterRoom" || button.name == "MenuButton" || button.name == "Quality2";
             image.color = primary ? Accent : Pale;
             var colors = button.colors;
             colors.normalColor = Color.white;

@@ -52,6 +52,7 @@ public static class StudyRoomSceneBuilder
         var root = new GameObject("ScreenStartUI");
         var start = root.AddComponent<StudyRoomStartScreen>();
         start.catalog = catalog;
+        start.homeBackgroundFx = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/StudyRoom/UI/Cute Background FX/Prefabs/URP/Diagonal_lines_pink(URP).prefab");
         start.regularFont = AssetDatabase.LoadAssetAtPath<Font>(StudyRoomEditorPaths.Fonts + "/CuteRounded.ttf");
         start.titleFont = AssetDatabase.LoadAssetAtPath<Font>(StudyRoomEditorPaths.Fonts + "/CuteRoundedBold.ttf");
         foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(StudyRoomEditorPaths.Sprites + "/RoundedPanel.asset"))
@@ -96,7 +97,13 @@ public static class StudyRoomSceneBuilder
         serialized.FindProperty("authoredPreview").objectReferenceValue = preview.gameObject;
         serialized.ApplyModifiedPropertiesWithoutUndo();
         var animator = preview.GetComponentInChildren<Animator>();
-        if (animator) { animator.Rebind(); animator.Update(0.2f); }
+        if (animator)
+        {
+            animator.Rebind();
+            int homeIdle = Animator.StringToHash("Base Layer.HomeIdle");
+            if (animator.HasState(0, homeIdle)) animator.Play(homeIdle, 0, 0f);
+            animator.Update(0.2f);
+        }
         target.Create(); previewCamera.Render(); Canvas.ForceUpdateCanvases();
         EditorUtility.SetDirty(start); AssetDatabase.SaveAssets();
         if (!EditorSceneManager.SaveScene(scene, StartPath)) throw new InvalidOperationException("Start scene save failed.");

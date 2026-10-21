@@ -673,6 +673,7 @@ MonoBehaviour:
   regularFont: {fileID: 12800000, guid: 4e7bfbd98f7ee7345a560c817a8f831e, type: 3}
   titleFont: {fileID: 12800000, guid: 2c30dd14ea17d91459291b12e41e08d2, type: 3}
   roundedSprite: {fileID: 8870037415665259782, guid: 57ef95cbe3d02224fa4dcc328c88f525, type: 2}
+  homeBackgroundFx: {fileID: 6375147622069290133, guid: 7f38cdffbadef4c25b19c019c448380b, type: 3}
   authoredPreview: {fileID: 1082522397}
 --- !u!4 &114611481
 Transform:
